@@ -19,6 +19,8 @@ from dash import html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
+import dash_bootstrap_components as dbc
+
 
 class UserData:
     def __init__(self, user_name = None, user_age = None,
@@ -257,6 +259,16 @@ app.layout = html.Div(
         html.Div(id="output_graph"),
         html.Div(id="output_text", style={"text-align": "center", "color": "blue"}),
     ],
+)
+
+
+### Buttons
+buttons = html.Div(
+    [
+        dbc.Button("Regular", color="primary", className="me-1"),
+        dbc.Button("Active", color="primary", active=True, className="me-1"),
+        dbc.Button("Disabled", color="primary", disabled=True),
+    ]
 )
 
 
