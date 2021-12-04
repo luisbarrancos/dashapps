@@ -79,9 +79,6 @@ class UserData:
 
 
 
-# external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-
-
 # get the CSV files
 datapath = os.path.join(os.getcwd(), "data2")
 datadict = dict()
@@ -119,7 +116,9 @@ for i, val in enumerate(uniqndx):
     )
 
 
-app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
+external_stylesheets = [dbc.themes.DARKLY]
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
@@ -197,11 +196,11 @@ app.layout = html.Div(
                 html.Br(),
                 html.Br(),
                 dcc.Dropdown(
-                    style= dropdown_style,
+                    #style= dropdown_style,
                     id="birthplace",
                     options=country_options,
                     value=None,
-                    placeholder="Birthplace (Country)",
+                    placeholder="Birthplace (Country)",className="dash-bootstrap"
                 ),
                 # period frequency, float?
                 html.Br(),
