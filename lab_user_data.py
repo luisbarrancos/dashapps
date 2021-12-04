@@ -257,15 +257,6 @@ def update_options(search_value):
     return [o for o in country_options if search_value in o["label"]]
 
 
-"""
-# Update output
-@app.callback(
-    Output('dd-output-container', 'children'),
-    Input('demo-dropdown', 'value')
-)
-def update_output(value):
-    return 'You have selected "{}"'.format(value)
-"""
 
 
 @app.callback(
@@ -308,54 +299,21 @@ def update_output_div(
             return "Failed check"
 
 
-"""
-# button output
-@app.callback(
-    Output(component_id="my-output", component_property="children"),
-    Input(component_id="submit-button-state", component_property="clicked")
-)
-def update_output(clicked):
-    if clicked is None:
-        raise PreventUpdate
-    else:
-        return "Elephants are the only animal that can't jump"
-"""
-
-"""
-@app.callback(
-    [
-        Output(component_id="output_graph", component_property="children"),
-        Output(component_id="output_text", component_property="children"),
-    ],
-    [
-        Input(component_id="user_name", component_property="value"),
-        Input(component_id="user_age", component_property="value"),
-        Input(component_id="birthplace", component_property="value"),
-        Input(component_id="residence", component_property="value"),
-        Input(component_id="sex", component_property="value"),
-    ],
-)
-def generate_graph(user_name, user_age, birthplace, residence, age):
-    userdata_ = UserData(user_name, user_age, birthplace, residence, age)
-
-    return None
-
-    object_=Payback_Tracker(name=obj,initial_cost=float(cost),usage_benefit=float(benefit),frequency=float(frequency_),period=period_)
-    object_.generate_balance_history()
-    data=object_.get_balance_data()
-
-    if object_.period !="day":
-        fig = px.bar(data, x=data.columns[0], y='Balance History',color="Balance History",color_continuous_scale="pubu",title="{} balance history for your {}".format(object_.period.capitalize()+"ly",object_.name))
-    else:
-        fig = px.bar(data, x=data.columns[0], y='Balance History',color="Balance History",color_continuous_scale="pubu",title="Daily balance history for your {}".format(object_.name))
-
-    return dcc.Graph(
-        figure=fig
-
-    ),
-    html.H2(object_.get_result()
-    )"""
-
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    #app.run_server(debug=True)
+    app.run_server(
+        host="127.0.0.1",
+        port="8050",
+        proxy=None,
+        debug=True,
+        #dev_tools_props_check=None,
+        #dev_tools_serve_dev_bundles=None,
+        #dev_tools_hot_reload=None,
+        #dev_tools_hot_reload_interval=None,
+        #dev_tools_hot_reload_watch_interval=None,
+        #dev_tools_hot_reload_max_retry=None,
+        #dev_tools_silence_routes_logging=None,
+        #dev_tools_prune_errors=None,
+        #**flask_run_options
+    )
