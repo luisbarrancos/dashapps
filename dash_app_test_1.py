@@ -16,17 +16,32 @@ import numpy as np
 import dash
 from dash import dcc
 from dash import html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import dash_bootstrap_components as dbc
 
 
 class UserData:
-    def __init__(self, user_name = None, user_age = None,
-                 birthplace = None, residence = None, sex = None,
-                 veggie = None, driver = None, smoker = None):
+    def __init__(
+        self,
+        user_name=None,
+        user_age=None,
+        birthplace=None,
+        residence=None,
+        sex=None,
+        veggie=None,
+        driver=None,
+        smoker=None,
+    ):
         self.__user_name = user_name
+        # this requires user_age is numeric
+
+        if user_age is not None and str(user_age).isdigit():
+            self.__user_age = user_age
+        else:
+            self.__user_age = 0
+
         self.__user_age = user_age
         self.__birthplace = birthplace
         self.__residence = residence
@@ -34,10 +49,11 @@ class UserData:
         self.__veggie = veggie
         self.__driver = driver
         self.__smoker = smoker
+        self.__allcheck = False
 
-
-    def set_age(self, age):
-        self.__age = age
+    def set_age(self, user_age):
+        self.__user_age = int(user_age) if user_age is not None and \
+            str(user_age).isdigit() else 0
 
     def set_name(self, name):
         self.__name = name
@@ -61,22 +77,43 @@ class UserData:
         self.__smoker = smoker
 
     def print_data(self):
-        print(self.__name, self.__age, self.__birthplace,
-              self.__residence, self.__sex, self.__veggie,
-              self.__driver, self.__smoker)
+        print(
+            self.__name,
+            self.__age,
+            self.__birthplace,
+            self.__residence,
+            self.__sex,
+            self.__veggie,
+            self.__driver,
+            self.__smoker,
+        )
 
     def get_data(self):
-        return [self.__user_name,
-                self.__user_age,
-                self.__birthplace,
-                self.__residence,
-                self.__sex,
-                self.__veggie,
-                self.__driver,
-                self.__smoker
-                ]
+        return [
+            self.__user_name,
+            self.__user_age,
+            self.__birthplace,
+            self.__residence,
+            self.__sex,
+            self.__veggie,
+            self.__driver,
+            self.__smoker,
+        ]
 
-
+    def check_data(self):
+        app.logger.info(type(self.__user_age))
+        self.__allcheck = (
+            True
+            if self.__user_name is not None
+            and self.__user_age > 0
+            and self.__birthplace is not None
+            and self.__residence is not None
+            and self.__sex is not None
+            and self.__veggie is not None
+            and self.__driver is not None
+            and self.__smoker is not None
+            else False
+        )
 
 
 # get the CSV files
@@ -86,8 +123,7 @@ datadict = dict()
 
 if os.path.isdir(datapath):
     datafiles = [
-        f for f in os.listdir(datapath) \
-            if os.path.isfile(os.path.join(datapath, f))
+        f for f in os.listdir(datapath) if os.path.isfile(os.path.join(datapath, f))
     ]
 
     # For these files, split the extension, capitalize and append them to a
@@ -121,8 +157,8 @@ external_stylesheets = [dbc.themes.DARKLY]
 app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
-    assets_url_path = os.path.join(os.getcwd(), "assets"),
-    )
+    assets_url_path=os.path.join(os.getcwd(), "assets"),
+)
 
 server = app.server
 
@@ -132,19 +168,29 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 dropdown_style = {
     "margin-left": "20px",
     "margin-right": "50px",
-    "color" : "#ffffff",
-    "background-color" : "#000000"
-    }
+    "color": "#ffffff",
+    "background-color": "#000000",
+}
+
+
+### Buttons
+# buttons = html.Div(
+#    [
+#        dbc.Button("Regular", color="primary", className="me-1"),
+#        dbc.Button("Active", color="primary", active=True, className="me-1"),
+#        dbc.Button("Disabled", color="primary", disabled=True),
+#    ]
+# )
 
 
 # layout
 app.layout = html.Div(
     style={
-    #    "font-family": "Sawasdee",
+        #    "font-family": "Sawasdee",
         "font-size": 22,
-    #    "color" : "#ffffff",
-    #    "background-color": "#000000",
-        },
+        #    "color" : "#ffffff",
+        #    "background-color": "#000000",
+    },
     children=[
         html.H1(style={"text-align": "left"}, children=""),
         # header
@@ -158,7 +204,7 @@ app.layout = html.Div(
             style={
                 "margin": "0 auto",
                 "width": "50%",
-            #    #"background-color": "#99d6ff",
+                #    #"background-color": "#99d6ff",
                 "padding": "15px",
             },
             # child of input area frame | input fields
@@ -168,8 +214,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
-                    #    "background-color" : "#000000",
-                    #    "color" : "#ffffff"
+                        #    "background-color" : "#000000",
+                        #    "color" : "#ffffff"
                     },
                     id="user_name",
                     value="",
@@ -185,8 +231,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
-                    #    "background-color" : "#000000",
-                    #    "color" : "#ffffff"
+                        #    "background-color" : "#000000",
+                        #    "color" : "#ffffff"
                     },
                     id="user_age",
                     type="number",
@@ -194,14 +240,14 @@ app.layout = html.Div(
                     max=120,
                     step=1,
                     inputMode="numeric",
-                    value="",
+                    value=None,
                     placeholder="Age",
                 ),
                 # period frequency, float?
                 html.Br(),
                 html.Br(),
                 dcc.Dropdown(
-                    #style= dropdown_style,
+                    # style= dropdown_style,
                     id="birthplace",
                     options=country_options,
                     value=None,
@@ -211,14 +257,14 @@ app.layout = html.Div(
                 html.Br(),
                 dcc.Dropdown(
                     id="residence",
-                    #style=dropdown_style,
+                    # style=dropdown_style,
                     options=country_options,
                     value=None,
                     placeholder="Country of Residence",
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    #style=dropdown_style,
+                    # style=dropdown_style,
                     id="sex",
                     options=[
                         {"label": "M", "value": "M"},
@@ -228,7 +274,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    #style=dropdown_style,
+                    # style=dropdown_style,
                     id="veggie",
                     options=[
                         {"label": "Y", "value": "Y"},
@@ -238,7 +284,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    #style=dropdown_style,
+                    # style=dropdown_style,
                     id="driver",
                     options=[
                         {"label": "Y", "value": "Y"},
@@ -248,7 +294,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    #style=dropdown_style,
+                    # style=dropdown_style,
                     id="smoker",
                     options=[
                         {"label": "Y", "value": "Y"},
@@ -259,20 +305,11 @@ app.layout = html.Div(
             ],
         ),
         html.Br(),
+        html.Button(id="submit-button-state", n_clicks=0, children="Submit"),
         html.Div(id="my-output"),
         html.Div(id="output_graph"),
         html.Div(id="output_text", style={"text-align": "center", "color": "blue"}),
     ],
-)
-
-
-### Buttons
-buttons = html.Div(
-    [
-        dbc.Button("Regular", color="primary", className="me-1"),
-        dbc.Button("Active", color="primary", active=True, className="me-1"),
-        dbc.Button("Disabled", color="primary", disabled=True),
-    ]
 )
 
 
@@ -303,7 +340,7 @@ def update_output(value):
 
 
 @app.callback(
-    Output(component_id='my-output', component_property='children'),
+    Output(component_id="my-output", component_property="children"),
     [
         Input(component_id="user_name", component_property="value"),
         Input(component_id="user_age", component_property="value"),
@@ -313,17 +350,42 @@ def update_output(value):
         Input(component_id="veggie", component_property="value"),
         Input(component_id="driver", component_property="value"),
         Input(component_id="smoker", component_property="value"),
+        Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
-    )
+)
 def update_output_div(
-        user_name, user_age, birthplace, residence,
-        sex, veggie, driver, smoker):
+    user_name, user_age, birthplace, residence, \
+        sex, veggie, driver, smoker, n_clicks
+):
+    age = int(user_age) if user_age is not None and \
+        str(user_age).isdigit() else 0
+
     userdata_ = UserData(
-        user_name, user_age, birthplace, residence,
-        sex, veggie, driver, smoker)
+        user_name, age, birthplace, residence, \
+            sex, veggie, driver, smoker
+    )
 
-    return "Output: {}".format(userdata_.get_data())
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        if userdata_.check_data() is True:
+            return "Output: {}".format(userdata_.get_data())
+        else:
+            return "Failed check"
 
+
+"""
+# button output
+@app.callback(
+    Output(component_id="my-output", component_property="children"),
+    Input(component_id="submit-button-state", component_property="clicked")
+)
+def update_output(clicked):
+    if clicked is None:
+        raise PreventUpdate
+    else:
+        return "Elephants are the only animal that can't jump"
+"""
 
 """
 @app.callback(
