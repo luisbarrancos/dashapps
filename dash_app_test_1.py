@@ -21,12 +21,18 @@ from dash.exceptions import PreventUpdate
 
 
 class UserData:
-    def __init__(self, user_name, user_age, birthplace, residence, sex):
+    def __init__(self, user_name = None, user_age = None,
+                 birthplace = None, residence = None, sex = None,
+                 veggie = None, driver = None, smoker = None):
         self.__user_name = user_name
         self.__user_age = user_age
         self.__birthplace = birthplace
         self.__residence = residence
         self.__sex = sex
+        self.__veggie = veggie
+        self.__driver = driver
+        self.__smoker = smoker
+
 
     def set_age(self, age):
         self.__age = age
@@ -43,15 +49,29 @@ class UserData:
     def set_sex(self, sex):
         self.__sex = sex
 
+    def set_veggie(self, veggie):
+        self.__veggie = veggie
+
+    def set_driver(self, driver):
+        self.__driver = driver
+
+    def set_smoker(self, smoker):
+        self.__smoker = smoker
+
     def print_data(self):
-        print(self.__name, self.__age, self.__birthplace, self.__residence, self.__sex)
+        print(self.__name, self.__age, self.__birthplace,
+              self.__residence, self.__sex, self.__veggie,
+              self.__driver, self.__smoker)
 
     def get_data(self):
         return [self.__user_name,
                 self.__user_age,
                 self.__birthplace,
                 self.__residence,
-                self.__sex
+                self.__sex,
+                self.__veggie,
+                self.__driver,
+                self.__smoker
                 ]
 
 
@@ -103,10 +123,22 @@ server = app.server
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
+dropdown_style = {
+    "margin-left": "20px",
+    "margin-right": "50px",
+    "color" : "#ffffff",
+    "background-color" : "#000000"
+    }
+
 
 # layout
 app.layout = html.Div(
-    style={"font-family": "Sawasdee", "font-size": 22, "background-color": "#f2f2f"},
+    style={
+        "font-family": "Sawasdee",
+        "font-size": 22,
+        "color" : "#ffffff",
+        "background-color": "#000000",
+        },
     children=[
         html.H1(style={"text-align": "left"}, children=""),
         # header
@@ -120,7 +152,7 @@ app.layout = html.Div(
             style={
                 "margin": "0 auto",
                 "width": "50%",
-                "background-color": "#99d6ff",
+                #"background-color": "#99d6ff",
                 "padding": "15px",
             },
             # child of input area frame | input fields
@@ -130,6 +162,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
+                        "background-color" : "#000000",
+                        "color" : "#ffffff"
                     },
                     id="user_name",
                     value="",
@@ -145,6 +179,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
+                        "background-color" : "#000000",
+                        "color" : "#ffffff"
                     },
                     id="user_age",
                     type="number",
@@ -159,7 +195,7 @@ app.layout = html.Div(
                 html.Br(),
                 html.Br(),
                 dcc.Dropdown(
-                    style={"margin-left": "20px", "margin-right": "50px"},
+                    style= dropdown_style,
                     id="birthplace",
                     options=country_options,
                     value=None,
@@ -168,21 +204,51 @@ app.layout = html.Div(
                 # period frequency, float?
                 html.Br(),
                 dcc.Dropdown(
-                    style={"margin-left": "20px", "margin-right": "50px"},
                     id="residence",
+                    style=dropdown_style,
                     options=country_options,
                     value=None,
                     placeholder="Country of Residence",
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    style={"margin-left": "20px", "margin-right": "50px"},
+                    style=dropdown_style,
                     id="sex",
                     options=[
                         {"label": "M", "value": "M"},
                         {"label": "F", "value": "F"},
                     ],
                     placeholder="Biological Sex",
+                ),
+                html.Br(),
+                dcc.Dropdown(
+                    style=dropdown_style,
+                    id="veggie",
+                    options=[
+                        {"label": "Y", "value": "Y"},
+                        {"label": "N", "value": "N"},
+                    ],
+                    placeholder="Are you a vegetarian?",
+                ),
+                html.Br(),
+                dcc.Dropdown(
+                    style=dropdown_style,
+                    id="driver",
+                    options=[
+                        {"label": "Y", "value": "Y"},
+                        {"label": "N", "value": "N"},
+                    ],
+                    placeholder="Do you drive a car?",
+                ),
+                html.Br(),
+                dcc.Dropdown(
+                    style=dropdown_style,
+                    id="smoker",
+                    options=[
+                        {"label": "Y", "value": "Y"},
+                        {"label": "N", "value": "N"},
+                    ],
+                    placeholder="Are you a Smoker?",
                 ),
             ],
         ),
@@ -228,10 +294,18 @@ def update_output(value):
         Input(component_id="birthplace", component_property="value"),
         Input(component_id="residence", component_property="value"),
         Input(component_id="sex", component_property="value"),
+        Input(component_id="veggie", component_property="value"),
+        Input(component_id="driver", component_property="value"),
+        Input(component_id="smoker", component_property="value"),
     ],
     )
-def update_output_div(user_name, user_age, birthplace, residence, age):
-    userdata_ = UserData(user_name, user_age, birthplace, residence, age)
+def update_output_div(
+        user_name, user_age, birthplace, residence,
+        sex, veggie, driver, smoker):
+    userdata_ = UserData(
+        user_name, user_age, birthplace, residence,
+        sex, veggie, driver, smoker)
+
     return "Output: {}".format(userdata_.get_data())
 
 
