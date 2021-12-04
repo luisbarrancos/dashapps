@@ -2,7 +2,7 @@
 
 ### Setup your virtual environment, Python 3.8.10+
 
- * virtualenv -m venv
+ * python3 -m virtualvenv venv
  * cd venv
  * source bin/env
  * pip3 install -r requirements.txt
@@ -32,7 +32,8 @@ custom_css = os.path.join(os.getcwd(), "css", "custom_css_filename.css")
 app = dash.Dash(__name__, external_stylesheet=custom_css)
 ```
 
-restart and refresh
+Load ```lab_user_data.py``` on Spyder, run and point the browser to your ```127.0.0.1:8050```
+
 
 
  
