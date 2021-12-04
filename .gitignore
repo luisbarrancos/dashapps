@@ -2,4 +2,8 @@
 *.swp
 *.bak
 *.tmp
+*.pyc
+*.pyd
+*.pyo
+__pycache__
 
