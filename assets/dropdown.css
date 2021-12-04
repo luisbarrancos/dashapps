@@ -15,8 +15,7 @@
 }
 
 .Select--single > .Select-control .Select-value, .Select-placeholder {
-    border: 1px solid grey;
-    border-radius: 4px;
+    border: 1px solid #333;
 }
 
 .VirtualizedSelectOption {
@@ -26,11 +25,14 @@
 
 .VirtualizedSelectFocusedOption {
     background-color: #222;
-    opacity: .7;
+    #opacity: .7;
+    color: #ffaa00
 }
 
 .Select.is-focused:not(.is-open) > .Select-control {
     background-color: #222;
-    border-color: var(--primary); 
+    #border-color: var(--primary); 
+    border-color: #222
     box-shadow: none;
 }
+

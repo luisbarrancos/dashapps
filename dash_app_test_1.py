@@ -118,7 +118,12 @@ for i, val in enumerate(uniqndx):
 
 external_stylesheets = [dbc.themes.DARKLY]
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(
+    __name__,
+    external_stylesheets=external_stylesheets,
+    assets_url_path = os.path.join(os.getcwd(), "assets"),
+    )
+
 server = app.server
 
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
@@ -135,10 +140,10 @@ dropdown_style = {
 # layout
 app.layout = html.Div(
     style={
-        "font-family": "Sawasdee",
+    #    "font-family": "Sawasdee",
         "font-size": 22,
-        "color" : "#ffffff",
-        "background-color": "#000000",
+    #    "color" : "#ffffff",
+    #    "background-color": "#000000",
         },
     children=[
         html.H1(style={"text-align": "left"}, children=""),
@@ -153,7 +158,7 @@ app.layout = html.Div(
             style={
                 "margin": "0 auto",
                 "width": "50%",
-                #"background-color": "#99d6ff",
+            #    #"background-color": "#99d6ff",
                 "padding": "15px",
             },
             # child of input area frame | input fields
@@ -163,8 +168,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
-                        "background-color" : "#000000",
-                        "color" : "#ffffff"
+                    #    "background-color" : "#000000",
+                    #    "color" : "#ffffff"
                     },
                     id="user_name",
                     value="",
@@ -180,8 +185,8 @@ app.layout = html.Div(
                         "font-size": 22,
                         "margin-left": "20px",
                         "margin-right": "50px",
-                        "background-color" : "#000000",
-                        "color" : "#ffffff"
+                    #    "background-color" : "#000000",
+                    #    "color" : "#ffffff"
                     },
                     id="user_age",
                     type="number",
@@ -200,20 +205,20 @@ app.layout = html.Div(
                     id="birthplace",
                     options=country_options,
                     value=None,
-                    placeholder="Birthplace (Country)",className="dash-bootstrap"
+                    placeholder="Birthplace (Country)",
                 ),
                 # period frequency, float?
                 html.Br(),
                 dcc.Dropdown(
                     id="residence",
-                    style=dropdown_style,
+                    #style=dropdown_style,
                     options=country_options,
                     value=None,
                     placeholder="Country of Residence",
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    style=dropdown_style,
+                    #style=dropdown_style,
                     id="sex",
                     options=[
                         {"label": "M", "value": "M"},
@@ -223,7 +228,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    style=dropdown_style,
+                    #style=dropdown_style,
                     id="veggie",
                     options=[
                         {"label": "Y", "value": "Y"},
@@ -233,7 +238,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    style=dropdown_style,
+                    #style=dropdown_style,
                     id="driver",
                     options=[
                         {"label": "Y", "value": "Y"},
@@ -243,7 +248,7 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    style=dropdown_style,
+                    #style=dropdown_style,
                     id="smoker",
                     options=[
                         {"label": "Y", "value": "Y"},
