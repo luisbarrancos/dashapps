@@ -52,11 +52,12 @@ class UserData:
         self.__allcheck = False
 
     def set_age(self, user_age):
-        self.__user_age = int(user_age) if user_age is not None and \
-            str(user_age).isdigit() else 0
+        self.__user_age = (
+            int(user_age) if user_age is not None and str(user_age).isdigit() else 0
+        )
 
-    def set_name(self, name):
-        self.__name = name
+    def set_name(self, user_name):
+        self.__user_name = user_name
 
     def set_birthplace(self, birthplace):
         self.__birthplace = birthplace
@@ -78,8 +79,8 @@ class UserData:
 
     def print_data(self):
         print(
-            self.__name,
-            self.__age,
+            self.__user_name,
+            self.__user_age,
             self.__birthplace,
             self.__residence,
             self.__sex,
@@ -101,19 +102,9 @@ class UserData:
         ]
 
     def check_data(self):
-        app.logger.info(type(self.__user_age))
-        self.__allcheck = (
-            True
-            if self.__user_name is not None
-            and self.__user_age > 0
-            and self.__birthplace is not None
-            and self.__residence is not None
-            and self.__sex is not None
-            and self.__veggie is not None
-            and self.__driver is not None
-            and self.__smoker is not None
-            else False
-        )
+        data = self.get_data()
+        check = filter(lambda x : x is not None, data)
+        return True if len(list(check)) > 0 else False
 
 
 # get the CSV files
@@ -354,20 +345,25 @@ def update_output(value):
     ],
 )
 def update_output_div(
-    user_name, user_age, birthplace, residence, \
-        sex, veggie, driver, smoker, n_clicks
+    user_name, user_age, birthplace, residence, sex, veggie, driver, smoker, n_clicks
 ):
-    age = int(user_age) if user_age is not None and \
-        str(user_age).isdigit() else 0
-
-    userdata_ = UserData(
-        user_name, age, birthplace, residence, \
-            sex, veggie, driver, smoker
-    )
-
-    if n_clicks is None:
+    if (
+        user_name is None
+        or user_age is None
+        or birthplace is None
+        or residence is None
+        or sex is None
+        or veggie is None
+        or driver is None
+        or smoker is None
+        or n_clicks is None
+    ):
         raise PreventUpdate
     else:
+        userdata_ = UserData(
+            user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
+        )
+
         if userdata_.check_data() is True:
             return "Output: {}".format(userdata_.get_data())
         else:
