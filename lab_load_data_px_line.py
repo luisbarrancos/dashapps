@@ -15,7 +15,6 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
 
 import plotly.express as px
 import plotly.graph_objs as go
@@ -37,13 +36,7 @@ print(df.columns)
 
 
 # Dash
-external_stylesheets = [dbc.themes.DARKLY]
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=external_stylesheets,
-    assets_url_path=os.path.join(os.getcwd(), "assets"),
-)
+app = dash.Dash(__name__)
 app.title = "Deadline"
 
 
@@ -68,41 +61,21 @@ dropdown = dcc.Dropdown(
     placeholder="Countries",
 )
 
-dropdown_style = {
-    "margin-left": "20px",
-    "margin-right": "50px",
-    "color": "#ffffff",
-    "background-color": "#000000",
-}
-
-
 graph1 = dcc.Graph(id="life_exp_scatter", config={"displayModeBar": False})
 
 app.layout = html.Div(
-    style = {
-        "font-family": "Sawasdee",
-        "font-size": 22,
-        "background-color" : "#111111",
-    },
-    children = [
+    [
+        html.Br(),
+        year_slider,
         html.Div(
             [
                 html.Br(),
-                html.Div(
-                    [dropdown],
-                    style={
-                        "width": "35%",
-                        "display": "inline-block",
-                        "background-color": "#eeeeee",
-                    },
-                ),
-                # dropdown,
+                dropdown,
                 html.Br(),
                 graph1,
                 html.Br(),
             ],
         ),
-        year_slider,
     ],
 )
 
@@ -178,17 +151,16 @@ def color_countries_and_region(country, years):
         df2 = df[mask]
         # df2_region = df[df["map_ref"] == region]
 
-        line_fig = px.line(
-            df2,
-            x="Year",
-            y="Life_expectancy",
-            color=df2.index,
-            template = "plotly_dark",
-            # mode="markers",
-            # showlegend=True,
-        )
+        line_fig =  px.line(
+                            df2,
+                            x = "Year",
+                            y = "Life_expectancy",
+                            color = df2.index,
+                            # mode="markers",
+                            # showlegend=True,
+                        )
 
-        # return {"data": []}
+        #return {"data": []}
         return line_fig
 
 
