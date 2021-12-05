@@ -25,41 +25,17 @@ import dash_bootstrap_components as dbc
 from UserData import UserData
 
 
-# get the CSV files
-datapath = os.path.join(os.getcwd(), "data2")
-datadict = dict()
-
-
-if os.path.isdir(datapath):
-    datafiles = [
-        f for f in os.listdir(datapath) if os.path.isfile(os.path.join(datapath, f))
-    ]
-
-    # For these files, split the extension, capitalize and append them to a
-    # dictionary which will contain as key the name minus extension and as
-    # value the Pandas DataFrame
-    for f in datafiles:
-        datadict[((f.rsplit(".", 1)[0]).capitalize())] = pd.read_csv(
-            os.path.join(datapath, f), index_col="Country"
-        )
-
-
-# find for each DB, the unique country/index entries
-# which we convert to lists and then sets to find the
-# intersection of the lists/sets
-uniqndx = []
-for key, val in datadict.items():
-    uniqndx.append(list(datadict[key].index.unique()))
-
-# inter = [i for i in uniqndx[0]]
-countries = []
-for i, val in enumerate(uniqndx):
-    countries = (
-        list(set(countries).intersection(set(uniqndx[i])))
-        if i != 0
-        else [i for i in uniqndx[0]]
-    )
-
+# All the data was previsously processed in jupyterlab notebooks
+# and we exported a final No-NaNs SQLite3 database
+# So, we load it directly and get the countries.
+# There are 158 here, but the intersection gives us 159
+#
+df = pd.DataFrame()
+df = pd.read_sql_table(
+    "Deadline_database", "sqlite:///deadline_database_nonans.db",
+    index_col="Country"
+)
+countries = list(df.index.unique())
 
 external_stylesheets = [dbc.themes.DARKLY]
 
@@ -257,8 +233,6 @@ def update_options(search_value):
     return [o for o in country_options if search_value in o["label"]]
 
 
-
-
 @app.callback(
     Output(component_id="my-output", component_property="children"),
     [
@@ -299,21 +273,20 @@ def update_output_div(
             return "Failed check"
 
 
-
 if __name__ == "__main__":
-    #app.run_server(debug=True)
+    # app.run_server(debug=True)
     app.run_server(
         host="127.0.0.1",
         port="8050",
         proxy=None,
         debug=True,
-        #dev_tools_props_check=None,
-        #dev_tools_serve_dev_bundles=None,
-        #dev_tools_hot_reload=None,
-        #dev_tools_hot_reload_interval=None,
-        #dev_tools_hot_reload_watch_interval=None,
-        #dev_tools_hot_reload_max_retry=None,
-        #dev_tools_silence_routes_logging=None,
-        #dev_tools_prune_errors=None,
-        #**flask_run_options
+        # dev_tools_props_check=None,
+        # dev_tools_serve_dev_bundles=None,
+        # dev_tools_hot_reload=None,
+        # dev_tools_hot_reload_interval=None,
+        # dev_tools_hot_reload_watch_interval=None,
+        # dev_tools_hot_reload_max_retry=None,
+        # dev_tools_silence_routes_logging=None,
+        # dev_tools_prune_errors=None,
+        # **flask_run_options
     )

@@ -11,8 +11,9 @@ import pandas as pd
 
 datapath = os.path.join(os.getcwd(), "data2")
 if os.path.isdir(datapath):
-    datafiles = [f for f in os.listdir(datapath) if \
-                 os.path.isfile(os.path.join(datapath, f))]
+    datafiles = [
+        f for f in os.listdir(datapath) if os.path.isfile(os.path.join(datapath, f))
+    ]
 
 # For these files, split the extension, capitalize and append them to
 # a dictionary which will contain as key the name minus extension and as
@@ -20,11 +21,12 @@ if os.path.isdir(datapath):
 datadict = dict()
 
 for f in datafiles:
-    datadict[((f.rsplit(".", 1)[0]).capitalize())] = \
-        pd.read_csv(os.path.join(datapath, f), index_col = "Country")
+    datadict[((f.rsplit(".", 1)[0]).capitalize())] = pd.read_csv(
+        os.path.join(datapath, f), index_col="Country"
+    )
 
-for key, val in datadict.items():
-    print(key)
+# for key, val in datadict.items():
+#    print(key)
 """
 Anual_number_of_deaths_by_cause
 Life_satisfaction_in_cantril_ladder_world_happiness_report_2021
@@ -48,13 +50,18 @@ uniqndx = []
 for key, val in datadict.items():
     uniqndx.append(list(datadict[key].index.unique()))
 
-#inter = [i for i in uniqndx[0]]
+# inter = [i for i in uniqndx[0]]
 countries = []
 
 for i, val in enumerate(uniqndx):
-    countries = list(set(countries).intersection(set(uniqndx[i]))) \
-        if i != 0 else [i for i in uniqndx[0]]
+    countries = (
+        list(set(countries).intersection(set(uniqndx[i])))
+        if i != 0
+        else [i for i in uniqndx[0]]
+    )
 
-print(len(countries))
 
+# set intersection = 159 countries with data
+# Drop code? Might be useful for plotting
 
+df2 = pd.read_sql_table("Deadline_database", "sqlite:///deadline_database_nonans.db", index_col = "Country")
