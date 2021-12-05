@@ -125,7 +125,7 @@ app.layout = html.Div(
                 dcc.Input(
                     style={
                         "font-size": 22,
-                        "margin-left": "20px",
+                        #"margin-left": "20px",
                         "margin-right": "50px",
                         #    "background-color" : "#000000",
                         #    "color" : "#ffffff"
@@ -142,7 +142,7 @@ app.layout = html.Div(
                 dcc.Input(
                     style={
                         "font-size": 22,
-                        "margin-left": "20px",
+                        #"margin-left": "20px",
                         "margin-right": "50px",
                         #    "background-color" : "#000000",
                         #    "color" : "#ffffff"
