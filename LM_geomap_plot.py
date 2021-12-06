@@ -31,11 +31,11 @@ colorscales = px.colors.named_colorscales()
 df = pd.DataFrame()
 df = pd.read_sql_table(
     "Deadline_database",
-    #"sqlite:///deadline_database_nonans.db",
+    # "sqlite:///deadline_database_nonans.db",
     "sqlite:///deadline_database_nonans_geo.db",
-    index_col="Country"
+    index_col="Country",
 )
-#df.dropna(inplace=True)
+# df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
 # problem is in some dbs, like nonans_geo, we have 600 years of data
 # leading to nulls everywhere except the last 15 years or so for most cols
@@ -68,19 +68,28 @@ year_slider = dcc.RangeSlider(
     marks={i: str(i) for i in range(year_min, year_max + 1, 10)},
 )
 
+# Year single slider
+year_single_slider = dcc.Slider(
+    id="year-single-slider",
+    min=year_min,
+    max=year_max,
+    value=year_min,
+    marks={i: str(i) for i in range(year_min, year_max + 1, 10)},
+)
+
 
 dropdown = dcc.Dropdown(
     # style= dropdown_style,
     id="countries",
     options=[{"label": str(val), "value": str(val)} for val in countries],
     multi=True,
-    value=tuple(), #list(df.index.unique()),
+    value=tuple(),  # list(df.index.unique()),
     placeholder="Countries",
     style={
-        "font-size" : 14,
+        "font-size": 14,
         # "width" : "70%",
-        "horizontalAlign" : "middle",
-        "verticalAlign" : "middle",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
     },
 )
 
@@ -91,20 +100,20 @@ data_picker = dcc.Dropdown(
             "label": str(val).replace("_", " ").title(),
             "value": val,
         }
-        for val in df.columns[2:len(df.columns)-3] # 2=1st statistic
+        for val in df.columns[2 : len(df.columns) - 3]  # 2=1st statistic
     ],
     multi=False,
     value=df.columns[2],
     placeholder="Statistic",
     style={
-        "font-size" : 14,
+        "font-size": 14,
         # "width" : "70%",
-        "horizontalAlign" : "middle",
-        "verticalAlign" : "middle",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
     },
 )
 
-#app.logger.info(df.columns[2])
+# app.logger.info(df.columns[2])
 
 button = dbc.Button(
     id="next-button-state",
@@ -128,7 +137,7 @@ scatter_graph = dcc.Graph(
 
 # Layout
 scatter_layout = go.Layout(
-    #title="Life Expectancy (Yearly Basis)",
+    # title="Life Expectancy (Yearly Basis)",
     xaxis={
         # "type": "log",
         # "title": "Year",
@@ -136,7 +145,7 @@ scatter_layout = go.Layout(
         "zerolinecolor": "#181818",
     },
     yaxis={
-        #"title": "Life Expectancy",
+        # "title": "Life Expectancy",
         "gridcolor": "#181818",
         "zerolinecolor": "#181818",
     },
@@ -161,21 +170,23 @@ app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.Div([
-                    html.Div(
-                        [
-                            dropdown,
-                        ],
-                        style={"padding": 10, "flex": 1, "width" : "50%"},
-                    ),
-                    html.Div(
-                        [
-                            data_picker,
-                        ],
-                        style={"padding": 10, "flex": 1, "width" : "50%"},
-                    )],
-                    style={"display":"flex"},
-                    ),
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                dropdown,
+                            ],
+                            style={"padding": 10, "flex": 1, "width": "50%"},
+                        ),
+                        html.Div(
+                            [
+                                data_picker,
+                            ],
+                            style={"padding": 10, "flex": 1, "width": "50%"},
+                        ),
+                    ],
+                    style={"display": "flex"},
+                ),
                 html.Div(
                     [
                         html.Br(),
@@ -185,7 +196,8 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     [
-                        year_slider,
+                        #year_slider,
+                        year_single_slider,
                     ],
                     style={"padding": 10, "flex": 1},
                 ),
@@ -205,48 +217,51 @@ app.layout = html.Div(
 @app.callback(
     Output("life_exp_scatter", "figure"),
     [
-     Input("countries", "value"),
-     Input("year-slider", "value"),
-     Input("data-picker", "value"),
-     Input("next-button-state", "n_clicks"),
+        Input("countries", "value"),
+        Input("year-single-slider", "value"),
+        Input("data-picker", "value"),
+        Input("next-button-state", "n_clicks"),
     ],
 )
 def color_countries_and_region(country, years, datafield, n_clicks):
     if country is None:
         raise PreventUpdate
 
-    #app.logger.info(df.index.unique())
+    # app.logger.info(df.index.unique())
 
     mask = (
         (df.index.isin(country)) &
-        (df["Year"] >= years[0]) & (df["Year"] <= years[1])
+        (df["Year"] == years)
+        # & (df["Year"] >= years[0]) & (df["Year"] <= years[1])
     )
 
     # logging.info(msg=locals())
     df2 = df[mask]
 
-    #line_fig = px.line(
+    # line_fig = px.line(
     #    df2,
     #    x="Year",
     #    y=datafield,
     #    color=df2.index,
     #    color_discrete_sequence=px.colors.qualitative.G10,
     #    # mode="markers",
-    #)
+    # )
 
     line_fig = px.choropleth(
         df2,
         locations=df2.index,
-        locationmode="country names", # or ISO-3
+        locationmode="country names",  # or ISO-3
         color=datafield,  # lifeExp is a column of gapminder
         hover_name=df2.index,  # column to add to hover information
-        color_continuous_scale=px.colors.sequential.Plasma,
+        projection="kavrayskiy7",
+        scope="world",
+        color_continuous_scale=px.colors.sequential.Turbo,
     )
 
     line_fig.update_layout(scatter_layout)
     line_fig.update_layout(
         title=str(datafield).replace("_", " ").title() + " (World Map)"
-        )
+    )
     return line_fig
 
 
