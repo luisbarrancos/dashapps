@@ -73,7 +73,7 @@ dropdown = dcc.Dropdown(
     value=tuple(), #list(df.index.unique()),
     placeholder="Countries",
     style={
-        "font-size" : 16,
+        "font-size" : 14,
         # "width" : "70%",
         "horizontalAlign" : "middle",
         "verticalAlign" : "middle",
@@ -87,13 +87,13 @@ data_picker = dcc.Dropdown(
             "label": str(val).replace("_", " ").title(),
             "value": val,
         }
-        for val in df.columns[2:] # 2=1st statistic
+        for val in df.columns[2:len(df.columns)-3] # 2=1st statistic
     ],
     multi=False,
     value=df.columns[2],
     placeholder="Statistic",
     style={
-        "font-size" : 16,
+        "font-size" : 14,
         # "width" : "70%",
         "horizontalAlign" : "middle",
         "verticalAlign" : "middle",
