@@ -97,11 +97,12 @@ data_picker = dcc.Dropdown(
     multi=False,
     value=list(fields.keys())[0],
     placeholder="Year",
-    style=dict(
-        # width="70%",
-        horizontalAlign="middle",
-        verticalAlign="middle",
-    ),
+    style={
+        "font-size": 14,
+        # "width" : "70%",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
+    },
 )
 
 # Year/range slider

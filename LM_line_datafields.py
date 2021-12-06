@@ -69,6 +69,12 @@ dropdown = dcc.Dropdown(
     multi=True,
     value=tuple(),
     placeholder="Countries",
+    style={
+        "font-size": 14,
+        # "width" : "70%",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
+    },
 )
 
 data_picker = dcc.Dropdown(
@@ -83,11 +89,12 @@ data_picker = dcc.Dropdown(
     multi=False,
     value=df.columns[1],
     placeholder="Statistic",
-    style=dict(
-        # width="70%",
-        horizontalAlign="middle",
-        verticalAlign="middle",
-    ),
+    style={
+        "font-size": 14,
+        # "width" : "70%",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
+    },
 )
 
 
