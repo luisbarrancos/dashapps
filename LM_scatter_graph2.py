@@ -50,8 +50,7 @@ for year in df["Year"].unique():
 
 # Layout
 scatter_layout = go.Layout(
-    title="Life Expectancy vs Satisfaction, Human Development Index & "
-    + "Average Total Schooling Years per Adult",
+    title="Life Expectancy vs Common Statistics",
     xaxis={
         #"type": "log",
         "title": "Life Satisfaction"
@@ -74,11 +73,16 @@ scatter_graph = dcc.Graph(id="scatter-graph", config={"displaylogo": False})
 
 # fields available for marker size
 fields = {
-    "Average_total_years_of_schooling_for_adult_population": "Avg Total School Year",
-    "Mortality_rate_under_5_per_1000_live_births": "Mortality Under 5 (per 1000)",
-    "Suicidy_mortality_rate_per_100000_population": "Suicidy Mortality (per 100000)",
-    "Share_of_population_below_poverty_line_2USD_per_day": "% Below Poverty (2USD/day)",
-    "Life_expectancy_at_birth": "Life Expectancy at Birth",
+    "Average_total_years_of_schooling_for_adult_population" :
+        "Avg Total School Year",
+    "Mortality_rate_under_5_per_1000_live_births" :
+        "Mortality Under 5 (per 1000)",
+    "Suicidy_mortality_rate_per_100000_population" :
+        "Suicidy Mortality (per 100000)",
+    "Share_of_population_below_poverty_line_2USD_per_day" :
+        "% Below Poverty (2USD/day)",
+    "Life_expectancy_at_birth" :
+        "Life Expectancy at Birth",
 }
 
 # hoverdata = [
