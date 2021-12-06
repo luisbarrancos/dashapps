@@ -53,11 +53,11 @@ select {
 }
 
 input#user_name, input#user_age {
-    background-color: #222;
-    border-top: 1px solid #333;
-    border-left: 1px solid #333;
-    border-bottom: 1px solid #333;
-    border-right: 1px solid #333;
+    background-color: #151515;
+    border-top: 1px solid #151515;
+    border-left: 1px solid #151515;
+    border-bottom: 1px solid #151515;
+    border-right: 1px solid #151515;
     border-radius: 4px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
