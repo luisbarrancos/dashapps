@@ -67,6 +67,7 @@ scatter_layout = go.Layout(
     paper_bgcolor="#111111",
     font_family="Sawasdee",
     font_color="#ffffff",
+    config= {"displaylogo" : False}
 )
 
 app.layout = html.Div(

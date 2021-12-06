@@ -48,14 +48,13 @@ year_options = []
 for year in df["Year"].unique():
     year_options.append({"label": str(year), "value": year})
 
-
 # Layout
 scatter_layout = go.Layout(
     title="Life Expectancy vs Satisfaction, Human Development Index & "
     + "Average Total Schooling Years per Adult",
     xaxis={"type": "log", "title": "Life Satisfaction"},
     yaxis={"title": "Life Expectancy"},
-    margin={"l": 40, "b": 40, "t": 40, "r": 40},
+    margin={"l": 60, "b": 60, "t": 60, "r": 60},
     legend={"x": 0, "y": 1},
     hovermode="closest",
     plot_bgcolor="#111111",
@@ -65,7 +64,7 @@ scatter_layout = go.Layout(
 )
 
 # Scatter graph
-scatter_graph = dcc.Graph(id="scatter-graph")
+scatter_graph = dcc.Graph(id="scatter-graph",  config= {'displaylogo': False})
 
 # Year dropdown
 year_picker = dcc.Dropdown(
@@ -75,20 +74,54 @@ year_picker = dcc.Dropdown(
     placeholder="Year",
 )
 
+# Year/range slider
+year_min = df["Year"].min()
+year_max = df["Year"].max()
+
+year_slider = dcc.RangeSlider(
+    id="year-slider",
+    min=year_min,
+    max=year_max,
+    value=[year_min, year_max],
+    marks={i: str(i) for i in range(year_min, year_max + 1, 5)},
+    tooltip={"placement": "bottom", "always_visible": True}
+)
 
 # Create the app layout
 app.layout = html.Div(
+    style={
+        "font-family": "Sawasdee",
+        "font-size": 22,
+        "background-color": "#111111",
+    },
+    children =
     [
-         year_picker,
-         scatter_graph,
+        html.Br(),
+        scatter_graph,
+        html.Br(),
+        html.Div([
+            year_picker,
+            year_slider,
+            ]),
+        #year_picker,
+        html.Br(),
     ]
 )
 
 # Connect the year picker drop down to the graph
-@app.callback(Output("scatter-graph", "figure"), [Input("year-picker", "value")])
-def update_figure(selected_year):
+@app.callback(
+    Output("scatter-graph", "figure"),
+    [Input("year-picker", "value"), Input("year-slider", "value")],
+    )
+def update_figure(selected_year, years):
     # Data only for selected year from the dropdown
-    filtered_df = df[df["Year"] == selected_year]
+    #if selected_year is None:
+    #    raise PreventUpdate
+
+    mask = ((df["Year"] >= years[0]) & (df["Year"] <= years[1]))
+
+    #filtered_df = df[df["Year"] == selected_year]
+    filtered_df = df[mask]
 
     # Create a trace for each continent
     traces = []
