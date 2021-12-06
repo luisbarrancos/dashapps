@@ -6,6 +6,8 @@ Created on Sat Dec  4 22:17:25 2021
 @author: cgwork
 """
 
+from app import app
+
 import logging
 import os
 import pandas as pd
@@ -41,13 +43,15 @@ countries = list(df.index.unique())
 
 # Dash
 external_stylesheets = [dbc.themes.DARKLY]
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=external_stylesheets,
-    assets_url_path=os.path.join(os.getcwd(), "assets"),
-)
-app.title = "Deadline"
+# =============================================================================
+# 
+# app = dash.Dash(
+#     __name__,
+#     external_stylesheets=external_stylesheets,
+#     assets_url_path=os.path.join(os.getcwd(), "assets"),
+# )
+# app.title = "Deadline"
+# =============================================================================
 
 
 # Year/range slider
@@ -83,6 +87,23 @@ graph1 = dcc.Graph(id="life_exp_scatter",
                    )
 
 
+button = dbc.Button(
+    style={
+        "font-size": 18,
+        "margin-left": "20px",
+        "margin-right": "80px",
+        "background-color": "#111",
+        "color": "#ffffff",
+    },
+    id="next-button-state",
+    n_clicks=0,
+    children="Next",
+    color="Primary",
+    className="me-1",
+    href="/page2"
+)
+
+
 # Layout
 scatter_layout = go.Layout(
     title="Life Expectancy (Yearly Basis)",
@@ -108,7 +129,7 @@ scatter_layout = go.Layout(
 )
 
 
-app.layout = html.Div(
+layout = html.Div(
     style={
         "font-family": "Sawasdee",
         "font-size": 22,
@@ -125,7 +146,14 @@ app.layout = html.Div(
             ],
         ),
         html.Br(),
-        # year_slider,
+        year_slider,
+        html.Br(),
+        html.Div(
+            [
+                button,
+            ],
+            className="d-grip gap-2 d-md-flex justify-content-md-end",
+        ),        
     ],
 )
 
@@ -164,20 +192,23 @@ def color_countries_and_region(
     return line_fig
 
 
-if __name__ == "__main__":
-    # app.run_server(debug=True)
-    app.run_server(
-        host="127.0.0.1",
-        port="8050",
-        proxy=None,
-        debug=True,
-        # dev_tools_props_check=None,
-        # dev_tools_serve_dev_bundles=None,
-        # dev_tools_hot_reload=None,
-        # dev_tools_hot_reload_interval=None,
-        # dev_tools_hot_reload_watch_interval=None,
-        # dev_tools_hot_reload_max_retry=None,
-        # dev_tools_silence_routes_logging=None,
-        # dev_tools_prune_errors=None,
-        # **flask_run_options
-    )
+# =============================================================================
+# if __name__ == "__main__":
+#     # app.run_server(debug=True)
+#     app.run_server(
+#         host="127.0.0.1",
+#         port="8050",
+#         proxy=None,
+#         debug=True,
+#         # dev_tools_props_check=None,
+#         # dev_tools_serve_dev_bundles=None,
+#         # dev_tools_hot_reload=None,
+#         # dev_tools_hot_reload_interval=None,
+#         # dev_tools_hot_reload_watch_interval=None,
+#         # dev_tools_hot_reload_max_retry=None,
+#         # dev_tools_silence_routes_logging=None,
+#         # dev_tools_prune_errors=None,
+#         # **flask_run_options
+#     )
+# 
+# =============================================================================

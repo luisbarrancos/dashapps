@@ -5,6 +5,7 @@ Created on Mon Dec  6 12:35:29 2021
 
 @author: cgwork
 """
+from app import app
 
 import logging
 import os
@@ -33,14 +34,16 @@ df.sort_values(by=["Year"], inplace=True)
 
 
 # Dash
-external_stylesheets = [dbc.themes.DARKLY]
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=external_stylesheets,
-    assets_url_path=os.path.join(os.getcwd(), "assets"),
-)
-app.title = "Deadline"
+# =============================================================================
+# external_stylesheets = [dbc.themes.DARKLY]
+# 
+# app = dash.Dash(
+#     __name__,
+#     external_stylesheets=external_stylesheets,
+#     assets_url_path=os.path.join(os.getcwd(), "assets"),
+# )
+# app.title = "Deadline"
+# =============================================================================
 
 
 # Create the list of years for the year drop-down
@@ -135,11 +138,12 @@ button = dbc.Button(
     children="Next",
     color="Primary",
     className="me-1",
+    href="/page4"
 )
 
 
 # Create the app layout
-app.layout = html.Div(
+layout = html.Div(
     style={
         "font-family": "Sawasdee",
         "font-size": 22,
@@ -227,21 +231,24 @@ def update_figure(datafield, years, n_clicks):
         "layout": scatter_layout,
     }
 
-
-if __name__ == "__main__":
-    # app.run_server(debug=True)
-    app.run_server(
-        host="127.0.0.1",
-        port="8050",
-        proxy=None,
-        debug=True,
-        # dev_tools_props_check=None,
-        # dev_tools_serve_dev_bundles=None,
-        # dev_tools_hot_reload=None,
-        # dev_tools_hot_reload_interval=None,
-        # dev_tools_hot_reload_watch_interval=None,
-        # dev_tools_hot_reload_max_retry=None,
-        # dev_tools_silence_routes_logging=None,
-        # dev_tools_prune_errors=None,
-        # **flask_run_options
-    )
+# =============================================================================
+# 
+# if __name__ == "__main__":
+#     # app.run_server(debug=True)
+#     app.run_server(
+#         host="127.0.0.1",
+#         port="8050",
+#         proxy=None,
+#         debug=True,
+#         # dev_tools_props_check=None,
+#         # dev_tools_serve_dev_bundles=None,
+#         # dev_tools_hot_reload=None,
+#         # dev_tools_hot_reload_interval=None,
+#         # dev_tools_hot_reload_watch_interval=None,
+#         # dev_tools_hot_reload_max_retry=None,
+#         # dev_tools_silence_routes_logging=None,
+#         # dev_tools_prune_errors=None,
+#         # **flask_run_options
+#     )
+# 
+# =============================================================================

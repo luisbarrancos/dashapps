@@ -5,6 +5,7 @@ Created on Sat Dec  4 22:17:25 2021
 
 @author: cgwork
 """
+from app import app
 
 import logging
 import os
@@ -46,15 +47,17 @@ countries = list(df.index.unique())
 
 
 # Dash
-external_stylesheets = [dbc.themes.DARKLY]
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=external_stylesheets,
-    assets_url_path=os.path.join(os.getcwd(), "assets"),
-)
-app.title = "Deadline"
-
+# =============================================================================
+# external_stylesheets = [dbc.themes.DARKLY]
+# 
+# app = dash.Dash(
+#     __name__,
+#     external_stylesheets=external_stylesheets,
+#     assets_url_path=os.path.join(os.getcwd(), "assets"),
+# )
+# app.title = "Deadline"
+# 
+# =============================================================================
 
 # Year/range slider
 year_min = df["Year"].min()
@@ -131,7 +134,7 @@ button = dbc.Button(
 )
 
 scatter_graph = dcc.Graph(
-    id="life_exp_scatter", config={"displayModeBar": True, "displaylogo": False}
+    id="geomap_plot", config={"displayModeBar": True, "displaylogo": False}
 )
 
 
@@ -161,7 +164,7 @@ scatter_layout = go.Layout(
 
 
 # Create the app layout
-app.layout = html.Div(
+layout = html.Div(
     style={
         "font-family": "Sawasdee",
         "font-size": 22,
@@ -240,7 +243,7 @@ projections = [
 ]
 
 @app.callback(
-    Output("life_exp_scatter", "figure"),
+    Output("geomap_plot", "figure"),
     [
         Input("countries", "value"),
         Input("year-single-slider", "value"),
@@ -297,21 +300,24 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     )
     return line_fig
 
-
-if __name__ == "__main__":
-    # app.run_server(debug=True)
-    app.run_server(
-        host="127.0.0.1",
-        port="8050",
-        proxy=None,
-        debug=True,
-        # dev_tools_props_check=None,
-        # dev_tools_serve_dev_bundles=None,
-        # dev_tools_hot_reload=None,
-        # dev_tools_hot_reload_interval=None,
-        # dev_tools_hot_reload_watch_interval=None,
-        # dev_tools_hot_reload_max_retry=None,
-        # dev_tools_silence_routes_logging=None,
-        # dev_tools_prune_errors=None,
-        # **flask_run_options
-    )
+# =============================================================================
+# 
+# if __name__ == "__main__":
+#     # app.run_server(debug=True)
+#     app.run_server(
+#         host="127.0.0.1",
+#         port="8050",
+#         proxy=None,
+#         debug=True,
+#         # dev_tools_props_check=None,
+#         # dev_tools_serve_dev_bundles=None,
+#         # dev_tools_hot_reload=None,
+#         # dev_tools_hot_reload_interval=None,
+#         # dev_tools_hot_reload_watch_interval=None,
+#         # dev_tools_hot_reload_max_retry=None,
+#         # dev_tools_silence_routes_logging=None,
+#         # dev_tools_prune_errors=None,
+#         # **flask_run_options
+#     )
+# 
+# =============================================================================
