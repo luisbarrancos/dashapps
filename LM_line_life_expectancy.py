@@ -69,6 +69,12 @@ dropdown = dcc.Dropdown(
     multi=True,
     value=tuple(),
     placeholder="Countries",
+    style={
+        "font-size": 14,
+        # "width" : "70%",
+        "horizontalAlign": "middle",
+        "verticalAlign": "middle",
+    },
 )
 
 graph1 = dcc.Graph(id="life_exp_scatter",
@@ -119,7 +125,7 @@ app.layout = html.Div(
             ],
         ),
         html.Br(),
-        year_slider,
+        # year_slider,
     ],
 )
 
@@ -127,14 +133,18 @@ app.layout = html.Div(
 @app.callback(
     Output("life_exp_scatter", "figure"),
     Input("countries", "value"),
-    State("year-slider", "value"),
+    # State("year-slider", "value"),
 )
-def color_countries_and_region(country, years):
+def color_countries_and_region(
+        country,
+        #years
+        ):
     if country is None:
         raise PreventUpdate
 
     mask = (
-        (df.index.isin(country)) & (df["Year"] >= years[0]) & (df["Year"] <= years[1])
+        (df.index.isin(country))
+        #& (df["Year"] >= years[0]) & (df["Year"] <= years[1])
     )
 
     # logging.info(msg=locals())
