@@ -66,26 +66,14 @@ scatter_layout = go.Layout(
 # Scatter graph
 scatter_graph = dcc.Graph(id="scatter-graph", config={"displaylogo": False})
 
-# Year dropdown
-year_picker = dcc.Dropdown(
-    id="year-picker",
-    options=[{"label": str(year), "value": year} for year in df["Year"].unique()],
-    value=df["Year"].min(),
-    placeholder="Year",
-)
 
 # fields available for marker size
 fields = {
-    "Average_total_years_of_schooling_for_adult_population":
-        "Avg Total School Year",
-    "Mortality_rate_under_5_per_1000_live_births":
-        "Mortality Under 5 (per 1000)",
-    "Suicidy_mortality_rate_per_100000_population":
-        "Suicidy Mortality (per 100000)",
-    "Share_of_population_below_poverty_line_2USD_per_day":
-        "% Below Poverty (2USD/day)",
-    "Life_expectancy_at_birth":
-        "Life Expectancy at Birth",
+    "Average_total_years_of_schooling_for_adult_population": "Avg Total School Year",
+    "Mortality_rate_under_5_per_1000_live_births": "Mortality Under 5 (per 1000)",
+    "Suicidy_mortality_rate_per_100000_population": "Suicidy Mortality (per 100000)",
+    "Share_of_population_below_poverty_line_2USD_per_day": "% Below Poverty (2USD/day)",
+    "Life_expectancy_at_birth": "Life Expectancy at Birth",
 }
 
 # hoverdata = [
@@ -104,6 +92,11 @@ data_picker = dcc.Dropdown(
     multi=False,
     value=list(fields.keys())[0],
     placeholder="Year",
+    style=dict(
+        # width="70%",
+        horizontalAlign="middle",
+        verticalAlign="middle",
+    ),
 )
 
 # Year/range slider
@@ -119,6 +112,22 @@ year_slider = dcc.RangeSlider(
     tooltip={"placement": "bottom", "always_visible": True},
 )
 
+button = dbc.Button(
+    style={
+        "font-size": 22,
+        "margin-left": "20px",
+        "margin-right": "80px",
+        "background-color": "#111",
+        "color": "#ffffff",
+    },
+    id="submit-button-state",
+    n_clicks=0,
+    children="Submit",
+    color="Primary",
+    className="me-1",
+)
+
+
 # Create the app layout
 app.layout = html.Div(
     style={
@@ -128,25 +137,33 @@ app.layout = html.Div(
     },
     children=[
         html.Div(
-            [
-                html.Br(),
-                scatter_graph,
-                html.Br(),
+            children=[
+                html.Div(
+                    [
+                        html.Br(),
+                        scatter_graph,
+                        html.Br(),
+                    ]
+                ),
+                html.Div(
+                    [
+                        data_picker,
+                        html.Br(),
+                        year_slider,
+                    ],
+                    style={"padding": 10, "flex": 1},
+                ),
+                html.Div(
+                    [
+                        button,
+                    ],
+                    className="d-grip gap-2 d-md-flex justify-content-md-end",
+                ),
             ]
         ),
-        html.Br(),
-        html.Div(
-            [
-                data_picker,
-                html.Br(),
-                year_slider,
-                html.Br(),
-            ]
-        ),
-        year_picker,
-        html.Br(),
     ],
 )
+
 
 # Connect the year picker drop down to the graph
 @app.callback(
@@ -154,17 +171,14 @@ app.layout = html.Div(
     [
         Input("data-picker", "value"),
         Input("year-slider", "value"),
-        Input("year-picker", "value"),
     ],
 )
-def update_figure(datafield, years, selected_year):
+def update_figure(datafield, years):
     # Data only for selected year from the dropdown
     # if selected_year is None:
     #    raise PreventUpdate
 
     mask = (df["Year"] >= years[0]) & (df["Year"] <= years[1])
-
-    # filtered_df = df[df["Year"] == selected_year]
     filtered_df = df[mask]
 
     # Create a trace for each continent
@@ -180,7 +194,8 @@ def update_figure(datafield, years, selected_year):
                 opacity=0.8,
                 hovertemplate="Life Expectancy: %{y:.2f}<br>"
                 + "Life Satisfaction: %{x:.2f}<br>"
-                + str(fields.get(datafield)) + ": %{marker.size:.2f}<br>"
+                + str(fields.get(datafield))
+                + ": %{marker.size:.2f}<br>"
                 + "Human Devel. Index: %{marker.color:.2f}",
                 marker={
                     "size": df_by_continent[datafield],
@@ -202,4 +217,19 @@ def update_figure(datafield, years, selected_year):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    # app.run_server(debug=True)
+    app.run_server(
+        host="127.0.0.1",
+        port="8050",
+        proxy=None,
+        debug=True,
+        # dev_tools_props_check=None,
+        # dev_tools_serve_dev_bundles=None,
+        # dev_tools_hot_reload=None,
+        # dev_tools_hot_reload_interval=None,
+        # dev_tools_hot_reload_watch_interval=None,
+        # dev_tools_hot_reload_max_retry=None,
+        # dev_tools_silence_routes_logging=None,
+        # dev_tools_prune_errors=None,
+        # **flask_run_options
+    )

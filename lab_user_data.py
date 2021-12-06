@@ -32,8 +32,7 @@ from UserData import UserData
 #
 df = pd.DataFrame()
 df = pd.read_sql_table(
-    "Deadline_database", "sqlite:///deadline_database_nonans.db",
-    index_col="Country"
+    "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
 )
 countries = list(df.index.unique())
 
@@ -42,7 +41,7 @@ external_stylesheets = [dbc.themes.DARKLY]
 app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
-    assets_url_path=os.path.join(os.getcwd(), "assets"),
+    # assets_url_path=os.path.join(os.getcwd(), "assets",
 )
 
 server = app.server
@@ -71,10 +70,10 @@ dropdown_style = {
 # layout
 app.layout = html.Div(
     style={
-        #    "font-family": "Sawasdee",
+        "font-family": "Sawasdee",
         "font-size": 22,
-        #    "color" : "#ffffff",
-        #    "background-color": "#000000",
+        "color": "#ffffff",
+        "background-color": "#111111",
     },
     children=[
         html.H1(style={"text-align": "left"}, children=""),
@@ -101,7 +100,7 @@ app.layout = html.Div(
                 dcc.Input(
                     style={
                         "font-size": 22,
-                        #"margin-left": "20px",
+                        # "margin-left": "20px",
                         "margin-right": "50px",
                         #    "background-color" : "#000000",
                         #    "color" : "#ffffff"
@@ -118,7 +117,7 @@ app.layout = html.Div(
                 dcc.Input(
                     style={
                         "font-size": 22,
-                        #"margin-left": "20px",
+                        # "margin-left": "20px",
                         "margin-right": "50px",
                         #    "background-color" : "#000000",
                         #    "color" : "#ffffff"
@@ -219,15 +218,16 @@ app.layout = html.Div(
 
 
 # Narrow options on dropdown
-@app.callback(Output("birthplace", "options"), Input("birthplace", "search_value"))
-def update_options(search_value):
+@app.callback(
+    Output("birthplace", "options"), Input("birthplace", "search_value"))
+def update_options_b(search_value):
     if not search_value:
         raise PreventUpdate
     return [o for o in country_options if search_value in o["label"]]
 
 
 @app.callback(Output("residence", "options"), Input("residence", "search_value"))
-def update_options(search_value):
+def update_options_r(search_value):
     if not search_value:
         raise PreventUpdate
     return [o for o in country_options if search_value in o["label"]]
@@ -262,15 +262,15 @@ def update_output_div(
         or n_clicks is None
     ):
         raise PreventUpdate
-    else:
-        userdata_ = UserData(
-            user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
-        )
 
-        if userdata_.check_data() is True:
-            return "Output: {}".format(userdata_.get_data())
-        else:
-            return "Failed check"
+    userdata_ = UserData(
+        user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
+    )
+
+    if userdata_.check_data() is True:
+        return "Output: {}".format(userdata_.get_data())
+
+    return "Failed check"
 
 
 if __name__ == "__main__":
