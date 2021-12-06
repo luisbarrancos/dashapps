@@ -87,7 +87,8 @@ def update_figuer(selected_year):
     if selected_year is None:
         raise PreventUpdate()
 
-    filtered_df = df[df["Year"] == selected_year]
+    mask = (df["Year"] == selected_year);
+    filtered_df = df[mask]
     traces = []
 
     # SQL db loaded with Country as index

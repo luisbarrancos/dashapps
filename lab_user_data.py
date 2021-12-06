@@ -200,7 +200,7 @@ app.layout = html.Div(
                     "font-size": 22,
                     "margin-left": "20px",
                     "margin-right": "80px",
-                    "background-color": "#222",
+                    "background-color": "#111",
                     "color": "#ffffff",
                 },
                 id="submit-button-state",
