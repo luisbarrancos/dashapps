@@ -10,14 +10,19 @@ import logging
 import os
 import pandas as pd
 
+# import numpy as np
+
 import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+import dash_bootstrap_components as dbc
 
 import plotly.express as px
 import plotly.graph_objs as go
+
+colorscales = px.colors.named_colorscales()
 
 # All the code for data filtering, processing, done in jupyterlab
 # notebooks (already in github), but now we can bypass all the processing
@@ -28,15 +33,20 @@ df = pd.read_sql_table(
     "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
 )
 df.dropna(inplace=True)
-df.sort_values(by=["Country", "Year"], inplace=True)
+df.sort_values(by=["Year"], inplace=True)
 
 countries = list(df.index.unique())
-
-print(df.columns)
+# print(df.columns)
 
 
 # Dash
-app = dash.Dash(__name__)
+external_stylesheets = [dbc.themes.DARKLY]
+
+app = dash.Dash(
+    __name__,
+    external_stylesheets=external_stylesheets,
+    assets_url_path=os.path.join(os.getcwd(), "assets"),
+)
 app.title = "Deadline"
 
 
@@ -61,12 +71,44 @@ dropdown = dcc.Dropdown(
     placeholder="Countries",
 )
 
-graph1 = dcc.Graph(id="life_exp_scatter", config={"displayModeBar": False})
+graph1 = dcc.Graph(id="life_exp_scatter",
+                   config={"displayModeBar" : True,
+                           "displaylogo" : False}
+                   )
+
+
+# Layout
+scatter_layout = go.Layout(
+    title="Life Expectancy (Yearly Basis)",
+    xaxis={
+        # "type": "log",
+        "title": "Year",
+        "gridcolor": "#181818",
+        "zerolinecolor": "#181818",
+    },
+    yaxis={
+        "title": "Life Expectancy",
+        "gridcolor": "#181818",
+        "zerolinecolor": "#181818",
+    },
+    margin={"l": 60, "b": 60, "t": 60, "r": 60},
+    legend={"x": 0, "y": 1},
+    hovermode="closest",
+    plot_bgcolor="#111111",
+    paper_bgcolor="#111111",
+    font_family="Sawasdee",
+    font_color="#ffffff",
+    template="plotly_dark",
+)
+
 
 app.layout = html.Div(
-    [
-        html.Br(),
-        year_slider,
+    style={
+        "font-family": "Sawasdee",
+        "font-size": 22,
+        "background-color": "#111111",
+    },
+    children=[
         html.Div(
             [
                 html.Br(),
@@ -76,60 +118,10 @@ app.layout = html.Div(
                 html.Br(),
             ],
         ),
+        html.Br(),
+        year_slider,
     ],
 )
-
-
-"""
-    dcc.Graph(
-        id="life_exp_vs_happy",
-        figure={
-            "data": [
-                go.Scatter(
-                    x = df[df.index == i]["Life_expectancy"],
-                    y = df[df.index == i]["Life_satisfaction"],
-                    #text=df[df.index.unique() == i],
-                    mode = "markers",
-                    opacity = 0.8,
-                    marker =
-                    {
-                        "size" : 15,
-                        "line" : {"width" : 0.5, "color" : "white"},
-                    },
-                    name = i
-                    ) for i in df.index.unique()
-            ],
-            "layout" : go.Layout
-            (
-                xaxis={"type": "log", "title": "Life Satisfaction"},
-                yaxis={"title": "Life Expectancy"},
-                margin={"l": 40, "b": 40, "t": 10, "r": 10},
-                legend={"x": 0, "y": 1},
-                hovermode="closest",
-            )
-        }
-    )
-"""
-
-"""
-@app.callback(
-    Output('life-expectancy-graph', 'figure'),
-    Input('submit-button', 'n_clicks'),
-    State('country-dropdown', 'value'),
-    State('year-slider', 'value'))
-def update_outputs(button_click, selected_country, selected_years):
-    if selected_country is None:
-       raise PreventUpdate
-    msk = (life_expectancy['country'].isin(selected_country)) & \
-          (life_expectancy['year'] >= selected_years[0]) & \
-          (life_expectancy['year'] <= selected_years[1])
-    life_expectancy_filtered = life_expectancy[msk]
-    line_fig = px.line(life_expectancy_filtered,
-                       x='year', y='life expectancy',
-                       title='Life expectancy',
-                       color='country')
-    return line_fig
-"""
 
 
 @app.callback(
@@ -140,29 +132,42 @@ def update_outputs(button_click, selected_country, selected_years):
 def color_countries_and_region(country, years):
     if country is None:
         raise PreventUpdate
-    else:
-        mask = (
-            (df.index.isin(country))
-            & (df["Year"] >= years[0])
-            & (df["Year"] <= years[1])
-        )
 
-        # logging.info(msg=locals())
-        df2 = df[mask]
-        # df2_region = df[df["map_ref"] == region]
+    mask = (
+        (df.index.isin(country)) & (df["Year"] >= years[0]) & (df["Year"] <= years[1])
+    )
 
-        line_fig =  px.line(
-                            df2,
-                            x = "Year",
-                            y = "Life_expectancy",
-                            color = df2.index,
-                            # mode="markers",
-                            # showlegend=True,
-                        )
+    # logging.info(msg=locals())
+    df2 = df[mask]
+    # df2_region = df[df["map_ref"] == region]
 
-        #return {"data": []}
-        return line_fig
+    line_fig = px.line(
+        df2,
+        x="Year",
+        y="Life_expectancy",
+        color=df2.index,
+        color_discrete_sequence=px.colors.qualitative.G10,
+        # mode="markers",
+    )
+
+    line_fig.update_layout(scatter_layout)
+    return line_fig
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    # app.run_server(debug=True)
+    app.run_server(
+        host="127.0.0.1",
+        port="8050",
+        proxy=None,
+        debug=True,
+        # dev_tools_props_check=None,
+        # dev_tools_serve_dev_bundles=None,
+        # dev_tools_hot_reload=None,
+        # dev_tools_hot_reload_interval=None,
+        # dev_tools_hot_reload_watch_interval=None,
+        # dev_tools_hot_reload_max_retry=None,
+        # dev_tools_silence_routes_logging=None,
+        # dev_tools_prune_errors=None,
+        # **flask_run_options
+    )

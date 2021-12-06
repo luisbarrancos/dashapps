@@ -26,7 +26,7 @@
 }
 
 .Select-control {
-    background-color: #222 !important;
+    background-color: #111 !important;
     border: 0px solid #111 !important;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .Select.is-focused > .Select-control {
-    background-color: #222;
+    background-color: #111;
 }
 .Select-input {
     color: #111;
@@ -54,20 +54,20 @@
 }
 
 .VirtualizedSelectOption {
-    background-color: #222;
+    background-color: #111;
     color: white;
  }
 
 .VirtualizedSelectFocusedOption {
-    background-color: #222;
+    background-color: #111;
     #opacity: .7;
     color: #ffaa00
 }
 
 .Select.is-focused:not(.is-open) > .Select-control {
-    background-color: #222;
+    background-color: #111;
     #border-color: var(--primary); 
-    border-color: #222
+    border-color: #111
     box-shadow: none;
 }
 .has-value.Select--single>.Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single>.Select-control .Select-value .Select-value-label {
@@ -79,7 +79,7 @@ select {
 }
 
 input {
-    background-color: #222;
+    background-color: #111;
     border-top: 1px solid #111;
     border-left: 1px solid #111;
     border-bottom: 1px solid #111;
