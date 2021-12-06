@@ -191,12 +191,12 @@ app.layout = html.Div(
                     [
                         html.Br(),
                         scatter_graph,
-                        html.Br(),
+                        # html.Br(),
                     ]
                 ),
                 html.Div(
                     [
-                        #year_slider,
+                        # year_slider,
                         year_single_slider,
                     ],
                     style={"padding": 10, "flex": 1},
@@ -214,6 +214,31 @@ app.layout = html.Div(
 )
 
 
+projections = [
+    "equirectangular",
+    "mercator",
+    "orthographic",
+    "natural earth",
+    "kavrayskiy7",
+    "miller",
+    "robinson",
+    "eckert4",
+    "azimuthal equal area",
+    "azimuthal equidistant",
+    "conic equal area",
+    "conic conformal",
+    "conic equidistant",
+    "gnomonic",
+    "stereographic",
+    "mollweide",
+    "hammer",
+    "transverse mercator",
+    "albers usa",
+    "winkel tripel",
+    "aitoff",
+    "sinusoidal",
+]
+
 @app.callback(
     Output("life_exp_scatter", "figure"),
     [
@@ -230,8 +255,8 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     # app.logger.info(df.index.unique())
 
     mask = (
-        (df.index.isin(country)) &
-        (df["Year"] == years)
+        (df.index.isin(country))
+        & (df["Year"] == years)
         # & (df["Year"] >= years[0]) & (df["Year"] <= years[1])
     )
 
@@ -246,6 +271,7 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     #    color_discrete_sequence=px.colors.qualitative.G10,
     #    # mode="markers",
     # )
+    # https://plotly.github.io/plotly.py-docs/generated/plotly.express.choropleth.html
 
     line_fig = px.choropleth(
         df2,
@@ -253,8 +279,15 @@ def color_countries_and_region(country, years, datafield, n_clicks):
         locationmode="country names",  # or ISO-3
         color=datafield,  # lifeExp is a column of gapminder
         hover_name=df2.index,  # column to add to hover information
-        projection="kavrayskiy7",
+        # hover_data
+        # projection="robinson",
+        projection=projections[6],
         scope="world",
+        labels = {
+            str(datafield).replace("_", " ").title() : datafield
+            },
+        # text = df["text],
+        # marker_line_color="white",
         color_continuous_scale=px.colors.sequential.Turbo,
     )
 
