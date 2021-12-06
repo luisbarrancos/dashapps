@@ -26,17 +26,6 @@ import dash_bootstrap_components as dbc
 # custom classes
 from UserData import UserData
 
-
-# All the data was previsously processed in jupyterlab notebooks
-# and we exported a final No-NaNs SQLite3 database
-# So, we load it directly and get the countries.
-# There are 158 here, but the intersection gives us 159
-#
-df = pd.DataFrame()
-df = pd.read_sql_table(
-    "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
-)
-countries = list(df.index.unique())
 # =============================================================================
 # 
 # external_stylesheets = [dbc.themes.DARKLY]
@@ -50,25 +39,6 @@ countries = list(df.index.unique())
 # server = app.server
 # 
 # =============================================================================
-country_options = [{"label": str(val), "value": str(val)} for val in countries]
-
-# app.logger.info(country_options)
-dropdown_style = {
-    "margin-left": "20px",
-    "margin-right": "50px",
-    "color": "#ffffff",
-    "background-color": "#000000",
-}
-
-
-### Buttons
-# buttons = html.Div(
-#    [
-#        dbc.Button("Regular", color="primary", className="me-1"),
-#        dbc.Button("Active", color="primary", active=True, className="me-1"),
-#        dbc.Button("Disabled", color="primary", disabled=True),
-#    ]
-# )
 
 
 # layout
