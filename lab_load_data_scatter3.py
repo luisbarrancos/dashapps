@@ -43,6 +43,32 @@ app = dash.Dash(
 app.title = "Deadline"
 
 
+# Year dropdown
+year_picker = dcc.Dropdown(
+    id="year-picker",
+    options=[{"label": str(year), "value": year} for year in df["Year"].unique()],
+    value=df["Year"].min(),
+    placeholder="Year",
+)
+
+# Scatter graph
+scatter_graph = dcc.Graph(id="scatter_graph")
+
+# Layout
+scatter_layout = go.Layout(
+    title="Life Expectancy vs Satisfaction, Human Development Index & " \
+        + "Average Total Schooling Years per Adult",
+    xaxis={"type": "log", "title": "Life Satisfaction"},
+    yaxis={"title": "Life Expectancy"},
+    margin={"l": 40, "b": 40, "t": 40, "r": 40},
+    legend={"x": 0, "y": 1},
+    hovermode="closest",
+    plot_bgcolor="#111111",
+    paper_bgcolor="#111111",
+    font_family="Sawasdee",
+    font_color="#ffffff",
+)
+
 app.layout = html.Div(
     style={
         "font-family": "Sawasdee",
@@ -51,49 +77,53 @@ app.layout = html.Div(
     },
     children =
     [
-        dcc.Graph(
-            id="life_exp_vs_happy",
-            figure={
-                "data": [
-                    go.Scatter(
-                        x=df[df.index == i]["Life_satisfaction"],
-                        y=df[df.index == i]["Life_expectancy"],
-                        # text=df[df.index.unique() == i],
-                        mode="markers",
-                        opacity=0.8,
-                        hovertemplate="Life Expectancy: %{y:.2f}<br>"
-                        + "Life Satisfaction: %{x:.2f}<br>"
-                        + "Avg. Years Total School: %{marker.size:.2f}<br>"
-                        + "Human Devel. Index: %{marker.color:.2f}",
-                        marker={
-                            "size": df[df.index == i][
-                                "Average_total_years_of_schooling_for_adult_population"
-                            ],
-                            "color": df[df.index == i]["Human_development_index"],
-                            "line": {"width": 2, "color":
-                                     df[df.index == i]["Human_development_index"],}
-                            #"colorscale" : "Viridis",
-                        },
-                        name=i,
-                    )
-                    for i in df.index.unique()
-                ],
-                "layout": go.Layout(
-                    xaxis={"type": "log", "title": "Life Satisfaction"},
-                    yaxis={"title": "Life Expectancy"},
-                    margin={"l": 40, "b": 40, "t": 10, "r": 10},
-                    legend={"x": 0, "y": 1},
-                    hovermode="closest",
-                    plot_bgcolor="#111111",
-                    paper_bgcolor="#111111",
-                    font_family="Sawasdee",
-                    font_color="#ffffff",
-                ),
-            },
-        )
+        html.Br(),
+        scatter_graph,
+        html.Br(),
+        year_picker,
+        html.Br(),
     ]
 )
 
+@app.callback(Output("graph", "figure"), [Input("year-picker", "value")])
+def update_figure(selected_year):
+
+    #if selected_year is None:
+    #    raise PreventUpdate()
+
+    filtered_df = df[df["Year"] == selected_year]
+    traces = []
+
+    for country in filtered_df["Country"].unique():
+
+        dfc = filtered_df[filtered_df["Country"] == country]
+
+        traces.append(
+            go.Scatter(
+                x=dfc["Life_satisfaction"],
+                y=dfc["Life_expectancy"],
+                # text=df[df.index.unique() == i],
+                mode="markers",
+                opacity=0.8,
+                hovertemplate="Life Expectancy: %{y:.2f}<br>"
+                + "Life Satisfaction: %{x:.2f}<br>"
+                + "Avg. Years Total School: %{marker.size:.2f}<br>"
+                + "Human Devel. Index: %{marker.color:.2f}",
+                marker={
+                    "size": dfc[
+                        "Average_total_years_of_schooling_for_adult_population"
+                    ],
+                    "color": dfc["Human_development_index"],
+                    "line": {"width": 2, "color":
+                             dfc["Human_development_index"],}
+                    #"colorscale" : "Viridis",
+                },
+                name=country,))
+
+    return {
+        "data": traces,
+        "layout": scatter_layout
+    }
 
 if __name__ == "__main__":
     app.run_server(debug=True)

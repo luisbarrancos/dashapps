@@ -9,6 +9,7 @@ Created on Sat Dec  4 22:17:25 2021
 import logging
 import os
 import pandas as pd
+import numpy as np
 
 import dash
 from dash import dcc
@@ -30,7 +31,7 @@ df = pd.read_sql_table(
     "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
 )
 df.dropna(inplace=True)
-df.sort_values(by=["Country", "Year"], inplace=True)
+df.sort_values(by=["Year"], inplace=True)
 
 countries = list(df.index.unique())
 # print(df.columns)
@@ -134,9 +135,11 @@ def color_countries_and_region(years, country, datafields):
 
 
     mask = (
-        (df.index.isin(country)) & (df["Year"] == years)
-    )
+        (df.index.isin(country)) & (np.any(df["Year"].values.tolist() == years))
+        )
 
+    #app.logger.info(df["Year"].values.tolist())
+    #app.logger.info(type(df["Year"]))
     # logging.info(msg=locals())
     df2 = df[mask]
     # df2_region = df[df["map_ref"] == region]
@@ -176,7 +179,7 @@ def color_countries_and_region(years, country, datafields):
                 "title": str(datafields),
                 },
             yaxis={
-                "type": "log",
+                #"type": "log",
                 "title": "Life Expectancy"
                 },
             margin={"l": 40, "b": 40, "t": 10, "r": 10},
