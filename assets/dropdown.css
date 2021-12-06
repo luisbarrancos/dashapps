@@ -23,7 +23,7 @@
 }
 
 .Select--single > .Select-control .Select-value, .Select-placeholder {
-    border: 1px solid #111;
+    border: 1px solid #181818 !important;
 
 }
 
@@ -34,14 +34,14 @@
 
 .VirtualizedSelectFocusedOption {
     background-color: #111;
-    #opacity: .7;
-    color: #ffaa00
+    /*opacity: .7;*/
+    color: #ffaa00;
 }
 
 .Select.is-focused:not(.is-open) > .Select-control {
     background-color: #111;
-    #border-color: var(--primary); 
-    border-color: #111
+    /*border-color: var(--primary);*/ 
+    border-color: #111;
     box-shadow: none;
 }
 .has-value.Select--single>.Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single>.Select-control .Select-value .Select-value-label {
@@ -53,11 +53,11 @@ select {
 }
 
 input#user_name, input#user_age {
-    background-color: #222;
-    border-top: 1px solid #333;
-    border-left: 1px solid #333;
-    border-bottom: 1px solid #333;
-    border-right: 1px solid #333;
+    background-color: #151515;
+    border-top: 1px solid #151515;
+    border-left: 1px solid #151515;
+    border-bottom: 1px solid #151515;
+    border-right: 1px solid #151515;
     border-radius: 4px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
