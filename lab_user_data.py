@@ -78,6 +78,7 @@ app.layout = html.Div(
     children=[
         html.H1(style={"text-align": "left"}, children=""),
         # header
+        html.Br(),
         html.P(
             style={
                 "text-align": "left",

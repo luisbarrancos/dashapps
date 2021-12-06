@@ -114,15 +114,15 @@ year_slider = dcc.RangeSlider(
 
 button = dbc.Button(
     style={
-        "font-size": 22,
+        "font-size": 18,
         "margin-left": "20px",
         "margin-right": "80px",
         "background-color": "#111",
         "color": "#ffffff",
     },
-    id="submit-button-state",
+    id="next-button-state",
     n_clicks=0,
-    children="Submit",
+    children="Next",
     color="Primary",
     className="me-1",
 )
@@ -153,6 +153,7 @@ app.layout = html.Div(
                     ],
                     style={"padding": 10, "flex": 1},
                 ),
+                html.Br(),
                 html.Div(
                     [
                         button,
@@ -171,9 +172,10 @@ app.layout = html.Div(
     [
         Input("data-picker", "value"),
         Input("year-slider", "value"),
+        Input("next-button-state", "n_clicks"),
     ],
 )
-def update_figure(datafield, years):
+def update_figure(datafield, years, n_clicks):
     # Data only for selected year from the dropdown
     # if selected_year is None:
     #    raise PreventUpdate
