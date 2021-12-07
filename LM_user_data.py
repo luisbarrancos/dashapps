@@ -229,7 +229,6 @@ layout = html.Form(
 )
 
 
-
 # Narrow options on dropdown
 @app.callback(
     Output("birthplace", "options"), Input("birthplace", "search_value"))

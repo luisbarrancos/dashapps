@@ -42,14 +42,16 @@ from UserData import UserData
 
 
 # layout
-app.layout = html.Div(
+layout = html.Div(
     children = [
         html.Video(
-            controls = True,
+            controls = False,
             id = 'movie_player',
-            #src = "https://www.youtube.com/watch?v=gPtn6hD7o8g",
-            src = "https://www.w3schools.com/html/mov_bbb.mp4",
-            autoPlay=True
+            # src = "https://www.youtube.com/watch?v=gPtn6hD7o8g",
+            # src = "https://www.w3schools.com/html/mov_bbb.mp4",
+            src = "assets/mockup_video_final.mp4",
+            autoPlay=True,
+            width = 1200,
         ),
         html.Div(
             dbc.Button(
@@ -57,7 +59,7 @@ app.layout = html.Div(
                     "font-size": 22,
                     "margin-left": "20px",
                     "margin-right": "80px",
-                    "background-color": "#111",
+                    "background-color": "#000",
                     "color": "#ffffff",
                 },
                 id="submit-button-state",
@@ -65,15 +67,15 @@ app.layout = html.Div(
                 children="Submit",
                 color="Primary",
                 className="me-1",
-                href="/page1"
+                href="/page0"
             ),
             className="d-grip gap-2 d-md-flex justify-content-md-end",
         ),
-        html.Div(id="my-output"),
+        html.Div(id="video-intro-output"),
         ])
 
 @app.callback(
-    Output(component_id="my-output", component_property="children"),
+    Output(component_id="video-intro-output", component_property="children"),
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
