@@ -4,7 +4,7 @@ from dash import html
 from dash.dependencies import Input, Output
 
 from app import app
-import LM_intro, LM_user_data, LM_line_life_expectancy, LM_line_datafields, LM_scatter_graph2, LM_geomap_plot
+import LM_intro, LM_user_data, LM_line_life_expectancy, LM_line_datafields, LM_scatter_graph2, LM_geomap_plot, LM_user_algo, LM_submit_social
 
 
 app.layout = html.Div([
@@ -26,6 +26,10 @@ def display_page(pathname):
         return LM_scatter_graph2.layout
     elif pathname == '/page4':
         return LM_geomap_plot.layout
+    elif pathname == '/page5':
+        return LM_user_algo.layout
+    elif pathname == '/page6':
+        return LM_submit_social.layout
     else:
         return LM_intro.layout
         # page 1

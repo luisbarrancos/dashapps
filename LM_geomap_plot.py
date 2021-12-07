@@ -131,6 +131,7 @@ button = dbc.Button(
     children="Next",
     color="Primary",
     className="me-1",
+    href="/page5",
 )
 
 scatter_graph = dcc.Graph(
