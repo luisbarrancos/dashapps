@@ -1,13 +1,15 @@
-from dash import dcc
-from dash import html
+from dash import dcc, html
 from dash.dependencies import Input, Output
 
+import LM_geomap_plot
+import LM_intro
+import LM_line_datafields
+import LM_line_life_expectancy
+import LM_scatter_graph2
+import LM_submit_social
+import LM_user_algo
+import LM_user_data
 from app import app
-
-import LM_intro, LM_user_data, LM_line_life_expectancy
-import LM_line_datafields, LM_scatter_graph2, LM_geomap_plot
-import LM_user_algo, LM_submit_social
-
 
 app.layout = html.Div(
     children=[

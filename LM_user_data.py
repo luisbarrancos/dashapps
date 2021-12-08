@@ -6,51 +6,43 @@ Created on Sat Dec  4 11:12:43 2021
 @author: cgwork
 """
 
-from app import app
-
 # Dataframes, DBs
 import os
-import pandas as pd
-import numpy as np
-
-
-# Dashboards modules
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-
-from sqlalchemy import create_engine
 
 import dash_bootstrap_components as dbc
+import pandas as pd
+
+# Dashboards modules
+from dash import dcc, html
+from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
+from sqlalchemy import create_engine
+
+from app import app
 
 # custom classes
 from UserData import UserData
 
+# All the code for data filtering, processing, done in jupyterlab
+# notebooks (already in github), but now we can bypass all the processing
+# and go straight to the final SQLite3 DB
 
-# All the data was previsously processed in jupyterlab notebooks
-# and we exported a final No-NaNs SQLite3 database
-# So, we load it directly and get the countries.
-# There are 158 here, but the intersection gives us 159
-#
-df = pd.DataFrame()
+datapath = os.path.join(os.getcwd(), "resources", "dbs")
+
 df = pd.read_sql_table(
-    "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
-)
+    "Deadline_database",
+    "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
+    index_col = "Country"
+    )
+
+# df.dropna(inplace=True)
+df.sort_values(by=["Year"], inplace=True)
+
+# problem is in some dbs, like nonans_geo, we have 600 years of data
+# leading to nulls everywhere except the last 15 years or so for most cols
+df = df[df["Year"] >= 2000]
+
 countries = list(df.index.unique())
-# =============================================================================
-#
-# external_stylesheets = [dbc.themes.DARKLY]
-#
-# app = dash.Dash(
-#     __name__,
-#     external_stylesheets=external_stylesheets,
-#     # assets_url_path=os.path.join(os.getcwd(), "assets",
-# )
-#
-# server = app.server
-#
-# =============================================================================
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
@@ -60,17 +52,6 @@ dropdown_style = {
     "color": "#ffffff",
     "background-color": "#000000",
 }
-
-
-### Buttons
-# buttons = html.Div(
-#    [
-#        dbc.Button("Regular", color="primary", className="me-1"),
-#        dbc.Button("Active", color="primary", active=True, className="me-1"),
-#        dbc.Button("Disabled", color="primary", disabled=True),
-#    ]
-# )
-
 
 # layout
 layout = html.Form(
@@ -275,47 +256,12 @@ def update_output_div(
 
     # for now, create a dataframe from user data/dictionary and write to
     # a sql DB, then load it.
-    data = userdata_.get_dict()
-
     df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
     # app.logger.info(df)
 
-    sqldb = os.path.join(os.getcwd(), "assets", "userdata.sql")
+    sqldb = os.path.join(os.getcwd(), "resources", "dbs", "userdata.sql")
     engine = create_engine("sqlite:///" + sqldb, echo=False)
     conn = engine.connect()
 
     df.to_sql("UserData", conn, if_exists="replace")
     conn.close()
-
-    # app.logger.info(df)
-
-    # DEBUG
-    # if userdata_.check_data() is True:
-    #    #return "Output: {}".format(userdata_.get_data())
-    #    return userdata_.get_data()
-    ##
-    # return "Failed check"
-    # return userdata_.get_dict()
-
-
-# =============================================================================
-#
-# if __name__ == "__main__":
-#     # app.run_server(debug=True)
-#     app.run_server(
-#         host="127.0.0.1",
-#         port="8050",
-#         proxy=None,
-#         debug=True,
-#         # dev_tools_props_check=None,
-#         # dev_tools_serve_dev_bundles=None,
-#         # dev_tools_hot_reload=None,
-#         # dev_tools_hot_reload_interval=None,
-#         # dev_tools_hot_reload_watch_interval=None,
-#         # dev_tools_hot_reload_max_retry=None,
-#         # dev_tools_silence_routes_logging=None,
-#         # dev_tools_prune_errors=None,
-#         # **flask_run_options
-#     )
-#
-# =============================================================================

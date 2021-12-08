@@ -26,21 +26,6 @@ import dash_bootstrap_components as dbc
 # custom classes
 from UserData import UserData
 
-# =============================================================================
-# 
-# external_stylesheets = [dbc.themes.DARKLY]
-# 
-# app = dash.Dash(
-#     __name__,
-#     external_stylesheets=external_stylesheets,
-#     # assets_url_path=os.path.join(os.getcwd(), "assets",
-# )
-# 
-# server = app.server
-# 
-# =============================================================================
-
-
 # layout
 layout = html.Div(
     children = [

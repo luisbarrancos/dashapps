@@ -5,23 +5,22 @@ Created on Sat Dec  4 22:17:25 2021
 
 @author: cgwork
 """
-from app import app
-
 import logging
 import os
+
+import dash
+import dash_bootstrap_components as dbc
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objs as go
+from dash import dcc, html
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
+
+from app import app
 
 # import numpy as np
 
-import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
-
-import plotly.express as px
-import plotly.graph_objs as go
 
 colorscales = px.colors.named_colorscales()
 
@@ -29,34 +28,36 @@ colorscales = px.colors.named_colorscales()
 # notebooks (already in github), but now we can bypass all the processing
 # and go straight to the final SQLite3 DB
 
-df = pd.DataFrame()
+datapath = os.path.join(os.getcwd(), "resources", "dbs")
+
 df = pd.read_sql_table(
     "Deadline_database",
-    # "sqlite:///deadline_database_nonans.db",
-    "sqlite:///deadline_database_nonans_geo.db",
-    index_col="Country",
-)
+    "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
+    index_col = "Country"
+    )
+
 # df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
+
 # problem is in some dbs, like nonans_geo, we have 600 years of data
 # leading to nulls everywhere except the last 15 years or so for most cols
 df = df[df["Year"] >= 2000]
 
 countries = list(df.index.unique())
-# print(df.columns)
+country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 
 # Dash
 # =============================================================================
 # external_stylesheets = [dbc.themes.DARKLY]
-# 
+#
 # app = dash.Dash(
 #     __name__,
 #     external_stylesheets=external_stylesheets,
 #     assets_url_path=os.path.join(os.getcwd(), "assets"),
 # )
 # app.title = "Deadline"
-# 
+#
 # =============================================================================
 
 # Year/range slider
@@ -243,6 +244,7 @@ projections = [
     "sinusoidal",
 ]
 
+
 @app.callback(
     Output("geomap_plot", "figure"),
     [
@@ -287,9 +289,7 @@ def color_countries_and_region(country, years, datafield, n_clicks):
         # projection="robinson",
         projection=projections[6],
         scope="world",
-        labels = {
-            str(datafield).replace("_", " ").title() : datafield
-            },
+        labels={str(datafield).replace("_", " ").title(): datafield},
         # text = df["text],
         # marker_line_color="white",
         color_continuous_scale=px.colors.sequential.Turbo,
@@ -301,8 +301,9 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     )
     return line_fig
 
+
 # =============================================================================
-# 
+#
 # if __name__ == "__main__":
 #     # app.run_server(debug=True)
 #     app.run_server(
@@ -320,5 +321,5 @@ def color_countries_and_region(country, years, datafield, n_clicks):
 #         # dev_tools_prune_errors=None,
 #         # **flask_run_options
 #     )
-# 
+#
 # =============================================================================

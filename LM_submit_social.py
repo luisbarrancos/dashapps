@@ -6,36 +6,29 @@ Created on Sat Dec  4 11:12:43 2021
 @author: cgwork
 """
 
-from app import app
-
-# for post
-import requests
-import urllib
-
-
 # Dataframes, DBs
 import os
-import pandas as pd
-
+import urllib
+from datetime import datetime, timedelta
+from random import random
 
 # Dashboards modules
 import dash
-from dash import dcc
-from dash import html
+import dash_bootstrap_components as dbc
+import pandas as pd
+
+# for post
+import requests
+from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
-
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
-
-from random import random
-
 from sqlalchemy import create_engine
+
+from app import app
 
 # custom classes
 from UserData import UserData
-
 
 # computed stats
 df = pd.read_sql_table(
@@ -118,7 +111,22 @@ layout = html.Form(
                                         },
                                     ),
                                 ],
-                                href="https://twitter.com/intent/tweet?text=" + urllib.parse.quote((df["time_left"].values[0] + '\n\n' + df["life_spent"].values[0] + '\n\n' + df["life_compare"].values[0] + '\n\n' + df["school"].values[0] + '\n\n' + df["co2_stats"].values[0])[:276] + ' ...',safe="/"),
+                                href="https://twitter.com/intent/tweet?text="
+                                + urllib.parse.quote(
+                                    (
+                                        df["time_left"].values[0]
+                                        + "\n\n"
+                                        + df["life_spent"].values[0]
+                                        + "\n\n"
+                                        + df["life_compare"].values[0]
+                                        + "\n\n"
+                                        + df["school"].values[0]
+                                        + "\n\n"
+                                        + df["co2_stats"].values[0]
+                                    )[:276]
+                                    + " ...",
+                                    safe="/",
+                                ),
                             ),
                             html.Img(
                                 src=app.get_asset_url("instagram.jpg"),
@@ -148,7 +156,7 @@ layout = html.Form(
                                             "cursor": "pointer",
                                         },
                                     )
-                                ]
+                                ],
                             ),
                         ],
                         style={"textAlign": "center"},
@@ -180,7 +188,7 @@ layout = html.Form(
 )
 
 
-def post_to_mastodon(toot,tags):
+def post_to_mastodon(toot, tags):
     token = MASTODON_TOKEN
     headers = {}
     data = {}
@@ -190,12 +198,11 @@ def post_to_mastodon(toot,tags):
     url = "https://botsin.space/api/v1/statuses"
 
     # toots are 500 chars max
-    data["status"] = toot + hashtags 
+    data["status"] = toot + hashtags
     data["visibility"] = "public"
-    
 
     retdata = requests.post(url=url, json=data, headers=headers)
-    
+
     return retdata
 
 
@@ -241,7 +248,7 @@ def mastodon(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        status_code = post_to_mastodon(toot,tags)
+        status_code = post_to_mastodon(toot, tags)
         app.logger.info("Tried posting, code = {}".format(status_code))
 
     return None

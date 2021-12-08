@@ -24,13 +24,27 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 
-# Read the data from the csv file
+# All the code for data filtering, processing, done in jupyterlab
+# notebooks (already in github), but now we can bypass all the processing
+# and go straight to the final SQLite3 DB
+
+datapath = os.path.join(os.getcwd(), "resources", "dbs")
+
 df = pd.read_sql_table(
     "Deadline_database",
-    "sqlite:///deadline_database_nonans.db",
-    # index_col="Country"
-)
+    "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
+    index_col = "Country"
+    )
+
+# df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
+
+# problem is in some dbs, like nonans_geo, we have 600 years of data
+# leading to nulls everywhere except the last 15 years or so for most cols
+df = df[df["Year"] >= 2000]
+
+countries = list(df.index.unique())
+country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 
 # Dash
