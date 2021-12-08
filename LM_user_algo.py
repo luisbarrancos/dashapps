@@ -323,16 +323,7 @@ def update_output_div(n_clicks):
     #    raise PreventUpdate
 
     data = generate_stats(df1, df2)
-
-    # append to DB, yeah, it sucks, but it's temporary (famous last words)
-    sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
-    engine = create_engine("sqlite:///" + sqldb, echo = False)
-    conn = engine.connect()
-    df2.to_sql("UserStats", conn, if_exists="replace")
-    conn.close()
-
-
-    app.logger.info(data)
+    #app.logger.info(data)
 
     time_left = (
         "{}, {} years old, natural from {} has " \
@@ -405,6 +396,25 @@ def update_output_div(n_clicks):
         "decreasing" if data["suicide_tendency"] < 1 else "increasing",
         round(data["suicide_num"])
     )
+
+    # create a dataframe with the formatted output for social media
+    strdata = {
+        "time_left" : [time_left],
+        "life_spent" : [life_spent],
+        "life_compare" : [life_compare],
+        "school" : [school],
+        "co2_stats" : [co2_stats],
+        "poverty" : [poverty],
+        "suic" : [suic]
+        }
+    df = pd.DataFrame.from_dict(strdata, orient="columns")
+
+    # store into a DB, this needs to be done better
+    sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
+    engine = create_engine("sqlite:///" + sqldb, echo = False)
+    conn = engine.connect()
+    df.to_sql("UserStats", conn, if_exists="replace")
+    conn.close()
 
     return time_left, life_spent, life_compare, school, \
         co2_stats, poverty, suic

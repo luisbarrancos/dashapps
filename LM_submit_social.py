@@ -204,7 +204,9 @@ def post_to_mastodon():
     ],
 )
 def mastodon(n_clicks):
-    app.logger.info("asdasd")
+    app.logger.info("submitting to mastodon")
+
+
     if n_clicks is None:
         raise PreventUpdate
     else:
