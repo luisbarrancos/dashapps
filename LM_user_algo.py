@@ -126,7 +126,7 @@ def generate_stats(dfc, dfu):
     data["target_data"] = current_date + timedelta(seconds=delta_secs)
 
     # build time left string from delta t3
-    data["time_left"] = (t1.year, t1.month, t1.day, t1.hour, t1.min)
+    data["time_left"] = t1
     data["time_left_str"] = (
         "You're expected to live another {} year, "
         + "{} month, {} days and {} hours".format(
@@ -212,7 +212,7 @@ def generate_stats(dfc, dfu):
 
     # store delta datetime object
     data["sampled_country_delta_age"] = delta
-    data["sampled_country_higher_life_exp"] = (
+    data["sampled_country_delta_age_positive"] = (
         True if data["max_age"] < data["sampled_country_max_age"] else False
     )
 
@@ -307,79 +307,72 @@ def update_output_div(n_clicks):
 
     data = generate_stats(df1, df2)
 
-    # =============================================================================
-    #     time_left = (
-    #         "{}, {} years old, natural from {} has "
-    #         + "approximately {} years,"
-    #         + " {} months and {} days left to live".format(
-    #             df2["name"].values[0],
-    #             df2["age"].values[0],
-    #             df2["birthplace"].values[0],
-    #             data["time_left"][0],
-    #             data["time_left"][1],
-    #             data["time_left"][2],
-    #         )
-    #     )
-    #
-    #     delta = 1
-    #     for f in data["sampled_country_delta_age"]:
-    #         if f < 0:
-    #             delta = -1
-    #             break
-    #
-    #     life_cmp = (
-    #         "He'll get to live until {} years old. Were he born in {}"
-    #         + " and he would get to live {} years, {} months, {} days, "
-    #         + "{} hours, {} seconds {}".format(
-    #             data["max_age"],
-    #             data["sampled_country"],
-    #             data["sampled_country_delta_age"][0],
-    #             data["sampled_country_delta_age"][1],
-    #             data["sampled_country_delta_age"][2],
-    #             data["sampled_country_delta_age"][3],
-    #             data["sampled_country_delta_age"][4],
-    #             "more." if delta == 1 else "less.",
-    #         )
-    #     )
-    #
-    #     school = (
-    #         "Of that time, {} years, {} months, {} days, {} hours will be"
-    #         + "(well) spent in school".format(
-    #             data["avg_schooling_years"][0],
-    #             data["avg_schooling_years"][1],
-    #             data["avg_schooling_years"][2],
-    #             data["avg_schooling_years"][3],
-    #         )
-    #     )
-    #
-    #     if df2["sex"].values[0] == "F":
-    #         life_cmp.replace("He'll ", "She'll ")
-    #         life_cmp.replace(" he ", " she ")
-    #
-    #     co2_stats = (
-    #         "His last CO2 fingerprint was {.3f} tons and"
-    #         + " he emitted a combined {.3f} tons of CO2 "
-    #         + "from {} to {}.".format(
-    #             data["latest_CO2_fingerprint"],
-    #             data["total_CO2_from_2006_to_2017"],
-    #             data["minyear"],
-    #             data["maxyear"],
-    #         )
-    #     )
-    #
-    #     if df2["sex"].values[0] == "F":
-    #         co2_stats.replace("His ", "Her ")
-    #         co2_stats.replace(" his ", " her ")
-    #
-    #     poverty = "Around {}, there are {} people below the poverty line.".format(
-    #         "him" if df2["sex"].values[0] == "M" else "her",
-    #         data["num_people_below_poverty"],
-    #     )
-    #
-    #     suic = "Thought the number of suicides is {}, there are {} suicies".format(
-    #         "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3
-    #     )
-    # =============================================================================
+    time_left = (
+        "{}, {} years old, natural from {} has "
+        + "approximately {} years,"
+        + " {} months and {} days left to live".format(
+            df2["name"].values[0],
+            df2["age"].values[0],
+            df2["birthplace"].values[0],
+            data["time_left"].year,
+            data["time_left"].month,
+            data["time_left"].hour
+        )
+    )
+
+    life_cmp = (
+        "He'll get to live until {} years old. Were he born in {}"
+        + " and he would get to live {} years, {} months, {} days, "
+        + "{} hours, {} seconds {}".format(
+            data["max_age"],
+            data["sampled_country"],
+            data["sampled_country_delta_age"].year,
+            data["sampled_country_delta_age"].month,
+            data["sampled_country_delta_age"].day,
+            data["sampled_country_delta_age"].hour,
+            data["sampled_country_delta_age"].min,
+            "more." if data["sampled_country_delta_age_positive"] \
+                is True else "less.",
+        )
+    )
+
+    school = (
+        "Of that time, {} years, {} months, {} days, {} hours will be"
+        + "(well) spent in school".format(
+            data["avg_schooling_years"].year,
+            data["avg_schooling_years"].month,
+            data["avg_schooling_years"].day,
+            data["avg_schooling_years"].hour,
+        )
+    )
+
+    if df2["sex"].values[0] == "F":
+        life_cmp.replace("He'll ", "She'll ")
+        life_cmp.replace(" he ", " she ")
+
+    co2_stats = (
+        "His last CO2 fingerprint was {.3f} tons and"
+        + " he emitted a combined {.3f} tons of CO2 "
+        + "from {} to {}.".format(
+            data["latest_CO2_fingerprint"],
+            data["total_CO2_from_2006_to_2017"],
+            data["minyear"],
+            data["maxyear"],
+        )
+    )
+
+    if df2["sex"].values[0] == "F":
+        co2_stats.replace("His ", "Her ")
+        co2_stats.replace(" his ", " her ")
+
+    poverty = "Around {}, there are {} people below the poverty line.".format(
+        "him" if df2["sex"].values[0] == "M" else "her",
+        data["num_people_below_poverty"],
+    )
+
+    suic = "Thought the number of suicides is {}, there are {} suicies".format(
+        "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3
+    )
 
     return 0  # time_left  # , life_cmp
 
