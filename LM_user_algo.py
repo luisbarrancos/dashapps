@@ -265,7 +265,7 @@ layout = html.Form(
                 },
                 children=[
                     html.P(id="output-time-left"),
-                    html.P(id="output-life-compare"),
+                    html.P(id="output-life-spent"),
                 ],
             ),
             html.Br(),
@@ -307,6 +307,15 @@ def update_output_div(n_clicks):
     #    raise PreventUpdate
 
     data = generate_stats(df1, df2)
+
+    # append to DB, yeah, it sucks, but it's temporary (famous last words)
+    #sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
+    #engine = create_engine("sqlite:///" + sqldb, echo = False)
+    #conn = engine.connect()
+    #df2.to_sql("UserStats", conn, if_exists="replace")
+    #conn.close()
+
+
     app.logger.info(data)
 
     time_left = (
@@ -322,9 +331,9 @@ def update_output_div(n_clicks):
         )
     )
 
-    life_spent = "{} spent {} of his lifetime already.".format(
-        "he" if df2["sex"].values[0] == "M" else "F",
-        data["life_spent"])
+    life_spent = "{} spent {:.3f}% of his lifetime already.".format(
+        "He" if df2["sex"].values[0] == "M" else "She",
+        float(data["life_spent"]))
 
     life_cmp = (
         "He'll get to live until {} years old. Were he born in {}"
