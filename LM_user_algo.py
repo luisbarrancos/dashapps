@@ -279,7 +279,7 @@ def update_output_div(n_clicks):
         raise PreventUpdate
 
     data = generate_stats(df1, df2)
-    app.logger.info(data)
+    #app.logger.info(data)
 
     time_left = "{}, {} years old, natural from {} has " \
         + "approximately {} years," \
