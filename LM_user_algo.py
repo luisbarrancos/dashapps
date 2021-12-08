@@ -73,6 +73,26 @@ dropdown_style = {
     "background-color": "#000000",
 }
 
+
+def get_time(max_age):
+    # max age is float years, get months, days, hours, secs, mins
+    total_seconds = max_age * 31536000  # 365 * 24 * 60 * 60
+    tmins, tsecs = divmod(total_seconds, 60)
+    thours, tmins = divmod(tmins, 60)
+    tdays, thours = divmod(thours, 24)
+    tmonths, tdays = divmod(tdays, 30)
+    tyears, tmonths = divmod(tmonths, 12)
+
+    tyears = int(tyears)
+    tmonths = int(tmonths)
+    tdays = int(tdays)
+    thours = int(thours)
+    tmins = int(tmins)
+    tsecs = int(tsecs)
+
+    return (tyears, tmonths, tdays, thours, tmins, tsecs)
+
+
 # functions to create user assessment vs statistical data
 def generate_stats(dfc, dfu):
 
@@ -81,14 +101,14 @@ def generate_stats(dfc, dfu):
     dfn = dfc.loc[dfu["birthplace"]]
 
     # latest value for life expectation (we can do LR later)
-    max_age = dfn[dfn["Year"] == dfn["Year"].max()]["Life_expectancy"].values[0]
+    max_user_age = dfn[dfn["Year"] == dfn["Year"].max()]["Life_expectancy"].values[0]
     user_age = dfu["age"]
 
     # store life spent (percentage)
-    life_spent = (user_age / float(max_age)) * 100
+    life_spent = (user_age / float(max_user_age)) * 100
     data = dict()
     data["life_spent"] = life_spent
-    data["max_age"] = max_age
+    data["max_age"] = max_user_age
 
     # stat date at 1/1/year, i.e, 1/1/2017, but no linear regression yet
     # we also know birth date (year at least)
@@ -105,38 +125,28 @@ def generate_stats(dfc, dfu):
     data["birth_year"] = user_birth_year
 
     # max age is float years, get months, days, hours, secs, mins
-    total_seconds = max_age * 31536000  # 365 * 24 * 60 * 60
-    tmins, tsecs = divmod(total_seconds, 60)
-    thours, tmins = divmod(tmins, 60)
-    tdays, thours = divmod(thours, 24)
-    tmonths, tdays = divmod(tdays, 30)
-    tyears, tmonths = divmod(tmonths, 12)
-
-    tyears = int(tyears)
-    tmonths = int(tmonths)
-    tdays = int(tdays)
-    thours = int(thours)
-    tmins = int(tmins)
-    tsecs = int(tsecs)
+    ti = get_time(max_user_age * 31536000)  # 365 * 24 * 60 * 60
 
     # build time left string
-    time_left = "You're expected to live another {} year, {} month, {} days".format(
-        tyears, tmonths, tdays
+    time_left = (
+        "You're expected to live another {} year, "
+        + "{} month, {} days and {} hours".format(ti[0], ti[1], ti[2], ti[3])
     )
 
-    data["time_left"] = (tyears, tmonths, tdays)
+    data["time_left"] = (ti[0], ti[1], ti[2], ti[3], ti[4])
     data["time_left_str"] = time_left
 
     # now set the target date for the countdown, adjust for date overflow
-    fmonth, fday = divmod(current_day + tdays, 30)
-    fyear, fmonth = divmod(current_month + tmonths + fmonth, 12)
+    fmonth, fday = divmod(current_day + ti[2], 30)
+    fyear, fmonth = divmod(current_month + ti[1] + fmonth, 12)
 
     fyear = int(fyear)
     fmonth = int(fmonth)
     fday = int(fday)
 
     # set the target date for the event, and start the countdown
-    target_date = datetime(year=fyear, month=fmonth, day=fday)
+    app.logger.info("year {}, month {}, day {}".format(fyear, fmonth, fday))
+    target_date = datetime(year=fyear, month=fmonth+1, day=fday+1)
     data["target_date"] = target_date
 
     # compute user expected CO2 fingerprint
@@ -178,7 +188,10 @@ def generate_stats(dfc, dfu):
 
     # Average_total_year_of_schooling_for_adult_population
     key = "Average_total_years_of_schooling_for_adult_population"
-    data["avg_schooling_years"] = dfn[dfn["Year"] == maxyear][key].values[0]
+    last_school_avg = dfn[dfn["Year"] == maxyear][key].values[0]
+    ts = get_time(last_school_avg * 31536000)  # 365 * 24 * 60 * 60
+    data["avg_schooling_years"] = ts # (Y, M, D, H, S)
+
     # of your time left to live, on average you spent these in schooling, time
     # well spent
 
@@ -198,11 +211,13 @@ def generate_stats(dfc, dfu):
 
     # latest value for life expectation (we can do LR later)
     max_age = dfn[dfn["Year"] == dfn["Year"].max()]["Life_expectancy"].values[0]
-    data["sampled_country_max_age"] = max_age
+    tm = get_time(max_age * 31536000)  # 365 * 24 * 60 * 60
+
+    data["sampled_country_max_age"] = max_age  # (Y, M, D, H, S)
     # Compared with someone from Country, you'll live +/- years
-    data["sampled_country_delta_age"] = (
-        data["max_age"] - data["sampled_country_max_age"]
-    )
+    delta = get_time(max_user_age * 31536000 - max_age * 31536000)
+
+    data["sampled_country_delta_age"] = delta  # (Y, M, D, H, S)
     app.logger.info(data)
 
     return data
@@ -279,10 +294,11 @@ def update_output_div(n_clicks):
         raise PreventUpdate
 
     data = generate_stats(df1, df2)
-    #app.logger.info(data)
+    # app.logger.info(data)
 
-    time_left = "{}, {} years old, natural from {} has " \
-        + "approximately {} years," \
+    time_left = (
+        "{}, {} years old, natural from {} has "
+        + "approximately {} years,"
         + " {} months and {} days left to live".format(
             df2["name"],
             df2["age"],
@@ -291,25 +307,61 @@ def update_output_div(n_clicks):
             data["time_left"][1],
             data["time_left"][2],
         )
+    )
+
+    delta = 1
+    for f in data["sampled_country_delta_age"]:
+        if f < 0:
+            delta = -1
+            break
+
+    life_cmp = \
+        "He'll get to live until {} years old. Were he born in {}" \
+        + " and he would get to live {} years, {} months, {} days, " \
+        + "{} hours, {} seconds {}".format(
+            data["max_age"],
+            data["sampled_country"],
+            data["sampled_country_delta_age"][0],
+            data["sampled_country_delta_age"][1],
+            data["sampled_country_delta_age"][2],
+            data["sampled_country_delta_age"][3],
+            data["sampled_country_delta_age"][4],
+            "more." if delta == 1 else "less.",
+        )
+
+    school = "Of that time, {} years, {} months, {} days, {} hours will be" \
+        + "(well) spent in school".format(
+            data["avg_schooling_years"][0],
+            data["avg_schooling_years"][1],
+            data["avg_schooling_years"][2],
+            data["avg_schooling_years"][3])
 
 
-    co2_stats = "His last CO2 fingerprint was {.3f} tons and" \
-        + " he emitted a combined {.3f} tons of CO2 " \
-            + "from {} to {}.".format(
-                data["latest_CO2_fingerprint"],
-                data["total_CO2_from_2006_to_2017"],
-                data["minyear"],
-                data["maxyear"])
+    if df2["sex"].values[0] == "F":
+        life_cmp.replace("He'll ", "She'll ")
+        life_cmp.replace(" he ", " she ")
 
-    if data["sex"] == "F":
+    co2_stats = (
+        "His last CO2 fingerprint was {.3f} tons and"
+        + " he emitted a combined {.3f} tons of CO2 "
+        + "from {} to {}.".format(
+            data["latest_CO2_fingerprint"],
+            data["total_CO2_from_2006_to_2017"],
+            data["minyear"],
+            data["maxyear"],
+        )
+    )
+
+    if df2["sex"].values[0] == "F":
         co2_stats.replace("His ", "Her ")
         co2_stats.replace(" his ", " her ")
 
+    poverty = "Around {}, there are {} people below the poverty line.".format(
+        "him" if df2["sex"].values[0] == "M" else "her",
+        data["num_people_below_poverty"])
 
-
-
-
-
+    suic = "Thought the number of suicides is {}, there are {} suicies".format(
+        "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3)
 
     return data
 
