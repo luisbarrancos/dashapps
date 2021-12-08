@@ -8,6 +8,9 @@ Created on Sat Dec  4 11:12:43 2021
 
 from app import app
 
+# for post
+import requests
+
 # Dataframes, DBs
 import os
 import pandas as pd
@@ -24,12 +27,10 @@ from datetime import datetime, timedelta
 from random import random
 
 import random as rng
-import requests
 
 from sqlalchemy import create_engine
 
 import dash_bootstrap_components as dbc
-
 
 # custom classes
 from UserData import UserData
@@ -45,18 +46,19 @@ df = pd.read_sql_table(
 )
 
 
+
 # =============================================================================
-#
+# 
 # external_stylesheets = [dbc.themes.DARKLY]
-#
+# 
 # app = dash.Dash(
 #     __name__,
 #     external_stylesheets=external_stylesheets,
 #     # assets_url_path=os.path.join(os.getcwd(), "assets",
 # )
-#
+# 
 # server = app.server
-#
+# 
 # =============================================================================
 
 # app.logger.info(country_options)
@@ -98,46 +100,32 @@ layout = html.Form(
                     "font-size": 32,
                     "margin": "auto",
                     "width": "50%",
-                    "padding": "20px",
+                    "padding": "20px" 
                 },
-                children=[
+                children= [
                     html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
-                    html.Div(
-                        [
-                            html.A(
-                                [
-                                    html.Img(
-                                        src=app.get_asset_url("twitter.png"),
-                                        style={
-                                            "height": "140px",
-                                            "width": "140px",
-                                            "padding": "10px",
-                                        },
-                                    ),
-                                ],
-                                href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters...",
-                            ),
-                            html.Img(
-                                src=app.get_asset_url("instagram.jpg"),
-                                style={
-                                    "height": "140px",
-                                    "width": "140px",
-                                    "padding": "10px",
-                                },
-                            ),
-                            html.Img(
-                                src=app.get_asset_url("facebook.png"),
-                                style={
-                                    "height": "140px",
-                                    "width": "140px",
-                                    "padding": "10px",
-                                },
-                            ),
-                        ],
-                        style={"textAlign": "center"},
-                    ),
-                ],
+                    html.Div([
+                        html.A(
+                            [
+                                html.Img(src=app.get_asset_url('twitter.png'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                            ],href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters..."
+                        ),
+                        html.Img(src=app.get_asset_url('instagram.jpg'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.A( id="a-link",
+                            children=[
+                                html.Img(src=app.get_asset_url('masterdom.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})
+                            ]
+                        ),
+                    ],
+                    style = {
+                        "textAlign": "center"
+                    })
+                ]
             ),
+                   
+
+
             html.Br(),
             html.Div(
                 dbc.Button(
@@ -153,7 +141,7 @@ layout = html.Form(
                     children="Submit",
                     color="Primary",
                     className="me-1",
-                    href="/page1",
+                    href="/page1"
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
@@ -163,21 +151,51 @@ layout = html.Form(
 )
 
 
-@app.callback(
-    Output(component_id="output-submit-social", component_property="children"),
-    [
-        Input(component_id="submit-button-state", component_property="n_clicks"),
-    ],
-)
-def update_output_div(n_clicks):
-    if n_clicks is None:
-        raise PreventUpdate
+def post_to_mastodon():
+    token = "ZxeAnfo9f2CZEEQJE5dAQoZO3cYuok8hZGVrEpYqkJI"
+    headers = {}
+    data = {} 
 
+    headers['Authorization'] = 'Bearer' + token
+    url = 'https://botsin.space/api/v1/statuses'
+
+    data['status'] = "meow"
+    data['visibility'] = 'public'  
+
+    x = requests.post(url=url, data=data, headers=headers)
+    app.logger.info(x)
     return ""
 
 
+@app.callback(
+    Output(component_id="output-submit-social", component_property="children"),
+    [
+        Input(component_id="a-link", component_property="n_clicks"),
+    ],
+)
+def mastodon(n_clicks):
+    app.logger.info("asdasd");
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        post_to_mastodon()
+    return ""
+
+
+# @app.callback(
+#     Output(component_id="output-submit-social", component_property="children"),
+#     [
+#         Input(component_id="submit-button-state", component_property="n_clicks"),
+#     ],
+# )
+# def update_output_div(n_clicks):
+#     if n_clicks is None:
+#         raise PreventUpdate
+
+#     return ""
+
 # =============================================================================
-#
+# 
 # if __name__ == "__main__":
 #     # app.run_server(debug=True)
 #     app.run_server(
@@ -195,5 +213,5 @@ def update_output_div(n_clicks):
 #         # dev_tools_prune_errors=None,
 #         # **flask_run_options
 #     )
-#
+# 
 # =============================================================================
