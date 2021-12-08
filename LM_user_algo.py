@@ -78,7 +78,8 @@ dropdown_style = {
 def convert_partial_year(number):
     year = int(number)
     d = timedelta(days=(number - year) * 365)
-    day_one = datetime(year, 1, 1)
+    # year 0 issue in datetime
+    day_one = datetime(max(1, year), 1, 1)
     date = d + day_one
     return date
 
@@ -129,11 +130,7 @@ def generate_stats(dfc, dfu):
     data["time_left"] = t3
     data["time_left_str"] = (
         "You're expected to live another {} year, "
-        + "{} month, {} days and {} hours".format(
-            t3.year,
-            t3.month,
-            t3.day,
-            t3.hour)
+        "{} month, {} days and {} hours".format(t3.year, t3.month, t3.day, t3.hour)
     )
 
     # compute user expected CO2 fingerprint
@@ -152,7 +149,7 @@ def generate_stats(dfc, dfu):
         dfn["Total_population"].sum() / len(dfn["Total_population"])
     )
 
-    data["total_CO2_from_{}_to_{}".format(minyear, maxyear)] = totalco2
+    data["total_CO2"] = totalco2
 
     # suicide data (% population, adjusted)
     latest_suic = dfn[dfn["Year"] == maxyear][
@@ -210,10 +207,8 @@ def generate_stats(dfc, dfu):
 
     # Compared with someone from Country, you'll live +/- years, abs delta
     delta = convert_partial_year(
-        abs(data["max_age"] -
-            data["sampled_country_max_age"] -
-            random() * 0.001)
-        )
+        abs(data["max_age"] - data["sampled_country_max_age"] - random() * 0.001)
+    )
 
     # store delta datetime object
     data["sampled_country_delta_age"] = delta
@@ -276,7 +271,6 @@ layout = html.Form(
                     html.P(id="output-co2-stats"),
                     html.P(id="output-poverty"),
                     html.P(id="output-suicides"),
-
                 ],
             ),
             html.Br(),
@@ -305,7 +299,7 @@ layout = html.Form(
 
 
 @app.callback(
-    #Output(component_id="output-user-algo", component_property="component"),
+    # Output(component_id="output-user-algo", component_property="component"),
     Output(component_id="output-time-left", component_property="children"),
     Output(component_id="output-life-spent", component_property="children"),
     Output(component_id="output-life-compare", component_property="children"),
@@ -313,7 +307,6 @@ layout = html.Form(
     Output(component_id="output-co2-stats", component_property="children"),
     Output(component_id="output-poverty", component_property="children"),
     Output(component_id="output-suicides", component_property="children"),
-
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
@@ -323,12 +316,11 @@ def update_output_div(n_clicks):
     #    raise PreventUpdate
 
     data = generate_stats(df1, df2)
-    #app.logger.info(data)
+    # app.logger.info(data)
 
     time_left = (
-        "{}, {} years old, natural from {} has " \
-         "approximately {} years," \
-             " {} months and {} days left to live.".format(
+        "{}, {} years old, natural from {} has {} years,"
+        " {} months and {} days left to live.".format(
             df2["name"].values[0],
             df2["age"].values[0],
             df2["birthplace"].values[0],
@@ -339,31 +331,29 @@ def update_output_div(n_clicks):
     )
 
     life_spent = "{} spent {:.3f}% of his lifetime already.".format(
-        "He" if df2["sex"].values[0] == "M" else "She",
-        float(data["life_spent"]))
+        "He" if df2["sex"].values[0] == "M" else "She", float(data["life_spent"])
+    )
 
     life_compare = (
-        "He'll get to live until {} years old. Were he born in {}" \
-            " and he would get to live {} years, {} months, {} days, " \
-                "{} hours {}".format(
+        "He'll live until {} years old. Were he born in {}"
+        " he would live {} years, {} months, {} days, "
+        "{} hours {}".format(
             data["max_age"],
             data["sampled_country"][0],
             data["sampled_country_delta_age"].year,
             data["sampled_country_delta_age"].month,
             data["sampled_country_delta_age"].day,
             data["sampled_country_delta_age"].hour,
-            "more." if data["sampled_country_delta_age_positive"] \
-                is True else "less.",
+            "more." if data["sampled_country_delta_age_positive"] is True else "less.",
         )
     )
 
     school = (
-        "Of that time, {} years, {} months, {} days, {} hours will be" \
-            " (well) spent in school".format(
+        "{} years, {} months, {} days were "
+        " (well) spent in school".format(
             data["avg_schooling_years"].year,
             data["avg_schooling_years"].month,
             data["avg_schooling_years"].day,
-            data["avg_schooling_years"].hour,
         )
     )
 
@@ -372,11 +362,11 @@ def update_output_div(n_clicks):
         life_compare.replace(" he ", " she ")
 
     co2_stats = (
-        "His last CO2 fingerprint was {:.3f} tons and" \
-            " he emitted a combined {:.3f} tons of CO2 " \
-                "from {} to {}.".format(
+        "His last CO2 fingerprint was {:.3f} tons and"
+        " he emitted {:.3f} tons of CO2 "
+        "from {} to {}.".format(
             data["latest_CO2_fingerprint"],
-            data["total_CO2_from_2006_to_2017"],
+            data["total_CO2"],
             data["minyear"],
             data["maxyear"],
         )
@@ -386,38 +376,39 @@ def update_output_div(n_clicks):
         co2_stats.replace("His ", "Her ")
         co2_stats.replace(" his ", " her ")
 
-    poverty = "Around {}, there are {} people below the poverty line.".format(
+    poverty = "Around {}, {} people below the poverty line.".format(
         "him" if df2["sex"].values[0] == "M" else "her",
         data["num_people_below_poverty"],
     )
 
-    suic = "Thought the number of suicides is {}, the last data shows" \
+    suic = (
+        "The number of suicides is {}, but the last data shows"
         " {} suicides.".format(
-        "decreasing" if data["suicide_tendency"] < 1 else "increasing",
-        round(data["suicide_num"])
+            "decreasing" if data["suicide_tendency"] < 1 else "increasing",
+            round(data["suicide_num"]),
+        )
     )
 
     # create a dataframe with the formatted output for social media
     strdata = {
-        "time_left" : [time_left],
-        "life_spent" : [life_spent],
-        "life_compare" : [life_compare],
-        "school" : [school],
-        "co2_stats" : [co2_stats],
-        "poverty" : [poverty],
-        "suic" : [suic]
-        }
+        "time_left": [time_left],
+        "life_spent": [life_spent],
+        "life_compare": [life_compare],
+        "school": [school],
+        "co2_stats": [co2_stats],
+        "poverty": [poverty],
+        "suic": [suic],
+    }
     df = pd.DataFrame.from_dict(strdata, orient="columns")
 
     # store into a DB, this needs to be done better
     sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
-    engine = create_engine("sqlite:///" + sqldb, echo = False)
+    engine = create_engine("sqlite:///" + sqldb, echo=False)
     conn = engine.connect()
     df.to_sql("UserStats", conn, if_exists="replace")
     conn.close()
 
-    return time_left, life_spent, life_compare, school, \
-        co2_stats, poverty, suic
+    return time_left, life_spent, life_compare, school, co2_stats, poverty, suic
 
 
 # =============================================================================

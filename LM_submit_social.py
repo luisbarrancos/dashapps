@@ -14,7 +14,6 @@ import requests
 # Dataframes, DBs
 import os
 import pandas as pd
-import numpy as np
 
 
 # Dashboards modules
@@ -38,7 +37,7 @@ from UserData import UserData
 
 # computed stats
 df = pd.read_sql_table(
-    "UserData",
+    "UserStats",
     "sqlite:///" + os.path.join(os.getcwd(), "assets", "computed_stats.sql"),
     index_col="index",
 )
@@ -103,10 +102,7 @@ layout = html.Form(
                     "padding": "20px",
                 },
                 children=[
-                    html.P(
-                        "Share Your Statistics:",
-                        style={"padding-bottom": "2em"}
-                        ),
+                    html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
                     html.Div(
                         [
                             html.A(
@@ -186,15 +182,15 @@ def post_to_mastodon(toot):
     headers = {}
     data = {}
 
-    headers["Authorization"] = "Bearer" + token
+    headers["Authorization"] = "Bearer " + token
     url = "https://botsin.space/api/v1/statuses"
 
+    # toots are 500 chars max
     data["status"] = toot
     data["visibility"] = "public"
 
     x = requests.post(url=url, data=data, headers=headers)
-    app.logger.info(x)
-    return ""
+    return x
 
 
 @app.callback(
@@ -204,20 +200,44 @@ def post_to_mastodon(toot):
     ],
 )
 def mastodon(n_clicks):
-    app.logger.info("submitting to mastodon")
 
-    final_str = \
-        df["time_left"] + "\n" + df["life_spent"] + "\n" + \
-            df["life_compare"] + "\n" + df["school"] + "\n" + \
-                df["school"] + "\n" + df["co2_stats"] + "\n" + \
-                    df["poverty"] + "\n" + df["suic"] + "\n"
+    toot = (
+        df["time_left"].values[0]
+        + "\n\n"
+        + df["life_spent"].values[0]
+        + "\n\n"
+        + df["life_compare"].values[0]
+        + "\n\n"
+        + df["school"].values[0]
+        + "\n\n"
+        + df["co2_stats"].values[0]
+        + "\n\n"
+    )
 
+    poverty = str(df["poverty"].values[0])
+
+    app.logger.info("Toot lenght (500 chars max) = {}".format(
+        len(toot + poverty)))
+
+    if len(toot + poverty) < 500:
+        toot += poverty
+
+        # + df["poverty"].values[0]
+        # Toots are limited to 500 chars. the last statistic would make it
+        # go over this limit and we still need a safety margin.
+        # + "\n"
+        # + df["suic"]
+        # + "\n"
+
+    # app.logger.info(toot)
 
     if n_clicks is None:
         raise PreventUpdate
     else:
-        post_to_mastodon(toot)
-    return ""
+        status_code = post_to_mastodon(toot)
+        app.logger.info("Tried posting, code = ".format(status_code))
+
+    return None
 
 
 # @app.callback(

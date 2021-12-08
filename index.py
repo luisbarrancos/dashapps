@@ -1,40 +1,48 @@
-import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 
 from app import app
-import LM_intro, LM_user_data, LM_line_life_expectancy, LM_line_datafields, LM_scatter_graph2, LM_geomap_plot, LM_user_algo, LM_submit_social
+
+import LM_intro, LM_user_data, LM_line_life_expectancy
+import LM_line_datafields, LM_scatter_graph2, LM_geomap_plot
+import LM_user_algo, LM_submit_social
 
 
 app.layout = html.Div(
-    children = [
-        dcc.Location(id='url', refresh=False),
-        html.Div(id='page-content'),
-        ]
-    )
+    children=[
+        dcc.Location(id="url", refresh=False),
+        html.Div(id="page-content"),
+    ]
+)
 
 
-@app.callback(Output('page-content', 'children'),
-              Input('url', 'pathname'))
+@app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
-    if pathname == '/page0':
+    if pathname == "/page0":
         return LM_user_data.layout
-    elif pathname == '/page1':
+
+    if pathname == "/page1":
         return LM_line_life_expectancy.layout
-    elif pathname == '/page2':
+
+    if pathname == "/page2":
         return LM_line_datafields.layout
-    elif pathname == '/page3':
+
+    if pathname == "/page3":
         return LM_scatter_graph2.layout
-    elif pathname == '/page4':
+
+    if pathname == "/page4":
         return LM_geomap_plot.layout
-    elif pathname == '/page5':
+
+    if pathname == "/page5":
         return LM_user_algo.layout
-    elif pathname == '/page6':
+
+    if pathname == "/page6":
         return LM_submit_social.layout
-    else:
-        return LM_intro.layout
-        # page 1
+
+    return LM_intro.layout
+    # page 1
+
 
 if __name__ == "__main__":
     # app.run_server(debug=True)

@@ -15,7 +15,6 @@ import numpy as np
 
 
 # Dashboards modules
-import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
@@ -40,17 +39,17 @@ df = pd.read_sql_table(
 )
 countries = list(df.index.unique())
 # =============================================================================
-# 
+#
 # external_stylesheets = [dbc.themes.DARKLY]
-# 
+#
 # app = dash.Dash(
 #     __name__,
 #     external_stylesheets=external_stylesheets,
 #     # assets_url_path=os.path.join(os.getcwd(), "assets",
 # )
-# 
+#
 # server = app.server
-# 
+#
 # =============================================================================
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
@@ -304,7 +303,7 @@ def update_output_div(
     #return userdata_.get_dict()
 
 # =============================================================================
-# 
+#
 # if __name__ == "__main__":
 #     # app.run_server(debug=True)
 #     app.run_server(
@@ -322,5 +321,5 @@ def update_output_div(
 #         # dev_tools_prune_errors=None,
 #         # **flask_run_options
 #     )
-# 
+#
 # =============================================================================
