@@ -108,7 +108,11 @@ layout = html.Form(
                 children= [
                     html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
                     html.Div([
-                        html.Img(src=app.get_asset_url('twitter.png'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.A(
+                            [
+                                html.Img(src=app.get_asset_url('twitter.png'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                            ],href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters..."
+                        ),
                         html.Img(src=app.get_asset_url('instagram.jpg'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
                         html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})],
                     style = {
@@ -117,6 +121,8 @@ layout = html.Form(
                 ]
             ),
                    
+
+
             html.Br(),
             html.Div(
                 dbc.Button(
