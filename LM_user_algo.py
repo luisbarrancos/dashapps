@@ -262,28 +262,14 @@ layout = html.Form(
                 id="output-textbox-div",
                 style={
                     "font-family": "Sawasdee",
-                    "font-size": 22,
+                    "font-size": 18,
                     "color": "#ffffff",
                     "background-color": "#111111",
+                    "padding" : "5%",
                 },
                 children=[
-                    html.P(
-                        id="output-time-left",
-                        style={
-                            "text-align": "left",
-                            "font-size": 32,
-                            "margin-left": "20px",
-                        },
-                    ),
-                    html.P(
-                        id="output-life-compare",
-                        style={
-                            "text-align": "left",
-                            "font-size": 32,
-                            "margin-left": "20px",
-                        },
-                    ),
-                    
+                    html.P(id="output-time-left"),
+                    html.P(id="output-life-compare"),
                     ]
                 ),
 
