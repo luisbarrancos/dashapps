@@ -257,7 +257,7 @@ layout = html.Form(
                     "font-size": 32,
                     "margin-left": "20px",
                 },
-                children="Your data shows that:",
+                children="Available data shows that",
             ),
             html.Div(
                 id="output-textbox-div",
