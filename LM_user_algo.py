@@ -258,6 +258,35 @@ layout = html.Form(
                 },
                 children="Your data shows that:",
             ),
+            html.Div(
+                id="output-textbox-div",
+                style={
+                    "font-family": "Sawasdee",
+                    "font-size": 22,
+                    "color": "#ffffff",
+                    "background-color": "#111111",
+                },
+                children=[
+                    html.P(
+                        id="output-time-left",
+                        style={
+                            "text-align": "left",
+                            "font-size": 32,
+                            "margin-left": "20px",
+                        },
+                    ),
+                    html.P(
+                        id="output-life-compare",
+                        style={
+                            "text-align": "left",
+                            "font-size": 32,
+                            "margin-left": "20px",
+                        },
+                    ),
+                    
+                    ]
+                ),
+
             html.Br(),
             html.Div(
                 dbc.Button(
@@ -284,14 +313,16 @@ layout = html.Form(
 
 
 @app.callback(
-    Output(component_id="output-user-algo", component_property="component"),
+    #Output(component_id="output-user-algo", component_property="component"),
+    Output(component_id="output-time-left", component_property="children"),
+    Output(component_id="output-life-compare", component_property="children"),
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
 )
 def update_output_div(n_clicks):
-    if n_clicks is None:
-        raise PreventUpdate
+    #if n_clicks is None:
+    #    raise PreventUpdate
 
     data = generate_stats(df1, df2)
     # app.logger.info(data)
@@ -363,7 +394,7 @@ def update_output_div(n_clicks):
     suic = "Thought the number of suicides is {}, there are {} suicies".format(
         "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3)
 
-    return data
+    return time_left, life_cmp
 
 
 # =============================================================================
