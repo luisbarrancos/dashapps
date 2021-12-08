@@ -348,13 +348,10 @@ def update_output_div(n_clicks):
         )
     )
 
-    school = (
-        "{} years, {} months, {} days were "
-        " (well) spent in school".format(
-            data["avg_schooling_years"].year,
-            data["avg_schooling_years"].month,
-            data["avg_schooling_years"].day,
-        )
+    school = "{} years, {} months, {} days were " " (well) spent in school".format(
+        data["avg_schooling_years"].year,
+        data["avg_schooling_years"].month,
+        data["avg_schooling_years"].day,
     )
 
     if df2["sex"].values[0] == "F":

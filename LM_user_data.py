@@ -212,7 +212,7 @@ layout = html.Form(
                     children="Submit",
                     color="Primary",
                     className="me-1",
-                    href="/page1"
+                    href="/page1",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
@@ -225,17 +225,14 @@ layout = html.Form(
 
 
 # Narrow options on dropdown
-@app.callback(
-    Output("birthplace", "options"),
-    Input("birthplace", "search_value"))
+@app.callback(Output("birthplace", "options"), Input("birthplace", "search_value"))
 def update_options_b(search_value):
     if not search_value:
         raise PreventUpdate
     return [o for o in country_options if search_value in o["label"]]
 
 
-@app.callback(Output("residence", "options"),
-              Input("residence", "search_value"))
+@app.callback(Output("residence", "options"), Input("residence", "search_value"))
 def update_options_r(search_value):
     if not search_value:
         raise PreventUpdate
@@ -257,8 +254,7 @@ def update_options_r(search_value):
     ],
 )
 def update_output_div(
-    user_name, user_age, birthplace, residence,
-    sex, veggie, driver, smoker, n_clicks
+    user_name, user_age, birthplace, residence, sex, veggie, driver, smoker, n_clicks
 ):
     if (
         user_name is None
@@ -282,25 +278,25 @@ def update_output_div(
     data = userdata_.get_dict()
 
     df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
-    #app.logger.info(df)
+    # app.logger.info(df)
 
     sqldb = os.path.join(os.getcwd(), "assets", "userdata.sql")
-    engine = create_engine("sqlite:///" + sqldb, echo = False)
+    engine = create_engine("sqlite:///" + sqldb, echo=False)
     conn = engine.connect()
 
     df.to_sql("UserData", conn, if_exists="replace")
     conn.close()
 
-
-    #app.logger.info(df)
+    # app.logger.info(df)
 
     # DEBUG
-    #if userdata_.check_data() is True:
+    # if userdata_.check_data() is True:
     #    #return "Output: {}".format(userdata_.get_data())
     #    return userdata_.get_data()
     ##
-    #return "Failed check"
-    #return userdata_.get_dict()
+    # return "Failed check"
+    # return userdata_.get_dict()
+
 
 # =============================================================================
 #

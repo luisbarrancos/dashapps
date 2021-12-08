@@ -216,8 +216,7 @@ def mastodon(n_clicks):
 
     poverty = str(df["poverty"].values[0])
 
-    app.logger.info("Toot lenght (500 chars max) = {}".format(
-        len(toot + poverty)))
+    app.logger.info("Toot lenght (500 chars max) = {}".format(len(toot + poverty)))
 
     if len(toot + poverty) < 500:
         toot += poverty
