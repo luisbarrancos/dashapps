@@ -181,7 +181,7 @@ layout = html.Form(
 )
 
 
-def post_to_mastodon():
+def post_to_mastodon(toot):
     token = MASTODON_TOKEN
     headers = {}
     data = {}
@@ -189,7 +189,7 @@ def post_to_mastodon():
     headers["Authorization"] = "Bearer" + token
     url = "https://botsin.space/api/v1/statuses"
 
-    data["status"] = "meow"
+    data["status"] = toot
     data["visibility"] = "public"
 
     x = requests.post(url=url, data=data, headers=headers)
@@ -206,11 +206,17 @@ def post_to_mastodon():
 def mastodon(n_clicks):
     app.logger.info("submitting to mastodon")
 
+    final_str = \
+        df["time_left"] + "\n" + df["life_spent"] + "\n" + \
+            df["life_compare"] + "\n" + df["school"] + "\n" + \
+                df["school"] + "\n" + df["co2_stats"] + "\n" + \
+                    df["poverty"] + "\n" + df["suic"] + "\n"
+
 
     if n_clicks is None:
         raise PreventUpdate
     else:
-        post_to_mastodon()
+        post_to_mastodon(toot)
     return ""
 
 
