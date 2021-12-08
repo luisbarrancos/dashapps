@@ -7,10 +7,12 @@ from app import app
 import LM_intro, LM_user_data, LM_line_life_expectancy, LM_line_datafields, LM_scatter_graph2, LM_geomap_plot, LM_user_algo, LM_submit_social
 
 
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+app.layout = html.Div(
+    children = [
+        dcc.Location(id='url', refresh=False),
+        html.Div(id='page-content'),
+        ]
+    )
 
 
 @app.callback(Output('page-content', 'children'),

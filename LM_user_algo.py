@@ -142,6 +142,8 @@ def generate_stats(dfc, dfu):
     # compute user expected CO2 fingerprint
     minyear = dfn["Year"].min()
     maxyear = dfn["Year"].max()
+    data["minyear"] = minyear
+    data["maxyear"] = maxyear
 
     latest_yco2 = dfn[dfn["Year"] == maxyear]["Annual_CO2_emissions"].values[0]
     latest_tpop = dfn[dfn["Year"] == maxyear]["Total_population"].values[0]
@@ -186,7 +188,7 @@ def generate_stats(dfc, dfu):
     poverty_num = (latest_tpop / 100.0) * poverty_rate
     # there are N persons around you living below the poverty line with
     # less than 2USD per day
-    data["num_people_below_poverty"] = poverty_num
+    data["num_people_below_poverty"] = int(poverty_num)
 
     # compare with other countries, only one
     sampled_country = rng.sample(list(dfc.index.unique()), 1)
@@ -201,6 +203,7 @@ def generate_stats(dfc, dfu):
     data["sampled_country_delta_age"] = (
         data["max_age"] - data["sampled_country_max_age"]
     )
+    app.logger.info(data)
 
     return data
 
@@ -238,7 +241,7 @@ layout = html.Form(
                     "font-size": 32,
                     "margin-left": "20px",
                 },
-                children="Please fill-in the data:",
+                children="Your data shows that:",
             ),
             html.Br(),
             html.Div(
@@ -266,7 +269,7 @@ layout = html.Form(
 
 
 @app.callback(
-    Output(component_id="output-user-algo", component_property="children"),
+    Output(component_id="output-user-algo", component_property="component"),
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
@@ -276,8 +279,39 @@ def update_output_div(n_clicks):
         raise PreventUpdate
 
     data = generate_stats(df1, df2)
+    app.logger.info(data)
 
-    return 0  # data
+    time_left = "{}, {} years old, natural from {} has " \
+        + "approximately {} years," \
+        + " {} months and {} days left to live".format(
+            df2["name"],
+            df2["age"],
+            df2["birthplace"],
+            data["time_left"][0],
+            data["time_left"][1],
+            data["time_left"][2],
+        )
+
+
+    co2_stats = "His last CO2 fingerprint was {.3f} tons and" \
+        + " he emitted a combined {.3f} tons of CO2 " \
+            + "from {} to {}.".format(
+                data["latest_CO2_fingerprint"],
+                data["total_CO2_from_2006_to_2017"],
+                data["minyear"],
+                data["maxyear"])
+
+    if data["sex"] == "F":
+        co2_stats.replace("His ", "Her ")
+        co2_stats.replace(" his ", " her ")
+
+
+
+
+
+
+
+    return data
 
 
 # =============================================================================

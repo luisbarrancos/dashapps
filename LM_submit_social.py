@@ -82,6 +82,18 @@ layout = html.Form(
         },
         children=[
             html.Br(),
+            html.H1(style={"text-align": "left"}, children=""),
+            # header
+            html.Br(),
+            html.P(
+                style={
+                    "text-align": "left",
+                    "font-size": 32,
+                    "margin-left": "20px",
+                },
+                children="Please fill-in the data:",
+            ),
+            html.Br(),
             html.Div(
                 dbc.Button(
                     style={
