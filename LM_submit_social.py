@@ -32,19 +32,10 @@ import dash_bootstrap_components as dbc
 # custom classes
 from UserData import UserData
 
-
-# All the data was previsously processed in jupyterlab notebooks
-# and we exported a final No-NaNs SQLite3 database
-# So, we load it directly and get the countries.
-# There are 158 here, but the intersection gives us 159
-#
-df1 = pd.read_sql_table(
-    "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
-)
-
-df2 = pd.read_sql_table(
+# computed stats
+df = pd.read_sql_table(
     "UserData",
-    "sqlite:///" + os.path.join(os.getcwd(), "assets", "userdata.sql"),
+    "sqlite:///" + os.path.join(os.getcwd(), "assets", "computed_stats.sql"),
     index_col="index",
 )
 
@@ -61,7 +52,7 @@ df2 = pd.read_sql_table(
 # )
 # 
 # server = app.server
-# 
+#
 # =============================================================================
 
 # app.logger.info(country_options)

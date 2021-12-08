@@ -325,11 +325,11 @@ def update_output_div(n_clicks):
     data = generate_stats(df1, df2)
 
     # append to DB, yeah, it sucks, but it's temporary (famous last words)
-    #sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
-    #engine = create_engine("sqlite:///" + sqldb, echo = False)
-    #conn = engine.connect()
-    #df2.to_sql("UserStats", conn, if_exists="replace")
-    #conn.close()
+    sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
+    engine = create_engine("sqlite:///" + sqldb, echo = False)
+    conn = engine.connect()
+    df2.to_sql("UserStats", conn, if_exists="replace")
+    conn.close()
 
 
     app.logger.info(data)
