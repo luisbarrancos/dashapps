@@ -407,7 +407,7 @@ def update_output_div(n_clicks):
     )
 
     return time_left, life_spent, life_compare, school, \
-        co2_stats, poverty, suic # , life_cmp
+        co2_stats, poverty, suic
 
 
 # =============================================================================
