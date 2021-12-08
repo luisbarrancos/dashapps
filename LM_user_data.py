@@ -280,7 +280,10 @@ def update_output_div(
 
     # for now, create a dataframe from user data/dictionary and write to
     # a sql DB, then load it.
-    df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="index")
+    data = userdata_.get_dict()
+
+    df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
+    #app.logger.info(df)
 
     sqldb = os.path.join(os.getcwd(), "assets", "userdata.sql")
     engine = create_engine("sqlite:///" + sqldb, echo = False)

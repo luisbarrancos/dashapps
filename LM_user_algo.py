@@ -37,12 +37,14 @@ from UserData import UserData
 # So, we load it directly and get the countries.
 # There are 158 here, but the intersection gives us 159
 #
-df = pd.read_sql_table(
+df1 = pd.read_sql_table(
     "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
 )
 
-dfu = pd.read_sql_table(
-    "UserData", "sqlite:///" + os.path.join(os.getcwd(), "assets", "userdata.sql")
+df2 = pd.read_sql_table(
+    "UserData",
+    "sqlite:///" + os.path.join(os.getcwd(), "assets", "userdata.sql"),
+    index_col="index",
 )
 
 # =============================================================================
@@ -60,7 +62,7 @@ dfu = pd.read_sql_table(
 # =============================================================================
 
 # country dropdowns require list of unique names
-countries = list(df.index.unique())
+countries = list(df1.index.unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
@@ -73,10 +75,11 @@ dropdown_style = {
 
 # functions to create user assessment vs statistical data
 def generate_stats(dfc, dfu):
-    # dfc = country DB, dfu = user database
-    app.logger.info(dfu)
 
-    dfn = dfc[dfu["birthplace"]]
+    # dfc = country DB, dfu = user database
+
+    dfn = dfc.loc[dfu["birthplace"]]
+
     # latest value for life expectation (we can do LR later)
     max_age = dfn[dfn["Year"] == dfn["Year"].max()]["Life_expectancy"].values[0]
     user_age = dfu["age"]
@@ -109,6 +112,13 @@ def generate_stats(dfc, dfu):
     tmonths, tdays = divmod(tdays, 30)
     tyears, tmonths = divmod(tmonths, 12)
 
+    tyears = int(tyears)
+    tmonths = int(tmonths)
+    tdays = int(tdays)
+    thours = int(thours)
+    tmins = int(tmins)
+    tsecs = int(tsecs)
+
     # build time left string
     time_left = "You're expected to live another {} year, {} month, {} days".format(
         tyears, tmonths, tdays
@@ -121,6 +131,10 @@ def generate_stats(dfc, dfu):
     fmonth, fday = divmod(current_day + tdays, 30)
     fyear, fmonth = divmod(current_month + tmonths + fmonth, 12)
 
+    fyear = int(fyear)
+    fmonth = int(fmonth)
+    fday = int(fday)
+
     # set the target date for the event, and start the countdown
     target_date = datetime(year=fyear, month=fmonth, day=fday)
     data["target_date"] = target_date
@@ -128,22 +142,23 @@ def generate_stats(dfc, dfu):
     # compute user expected CO2 fingerprint
     minyear = dfn["Year"].min()
     maxyear = dfn["Year"].max()
+
     latest_yco2 = dfn[dfn["Year"] == maxyear]["Annual_CO2_emissions"].values[0]
     latest_tpop = dfn[dfn["Year"] == maxyear]["Total_population"].values[0]
 
     user_co2 = latest_yco2 / float(latest_tpop)
     data["latest_CO2_fingerprint"] = user_co2
 
-    totalco2 = (
-        dfn.apply(lambda x: x["Annual_CO2_emissions"] / x["Total_population"])
-    ).sum()
+    totalco2 = dfn["Annual_CO2_emissions"].sum() / (
+        dfn["Total_population"].sum() / len(dfn["Total_population"])
+    )
 
     data["total_CO2_from_{}_to_{}".format(minyear, maxyear)] = totalco2
 
     # suicide data (% population, adjusted)
     latest_suic = dfn[dfn["Year"] == maxyear][
-        "Suicide_mortality_rate_per_100000_population"
-    ]
+        "Suicidy_mortality_rate_per_100000_population"
+    ].values[0]
 
     population_adjusted = latest_tpop / 100000.0
     suic_rate = latest_suic / population_adjusted
@@ -152,30 +167,31 @@ def generate_stats(dfc, dfu):
     # is it an increasing or decreasing likelyhood?
     if minyear < maxyear:
         tsuic = dfn[dfn["Year"] == maxyear - 1][
-            "Suicide_mortality_rate_per_100000_population"
-        ]
+            "Suicidy_mortality_rate_per_100000_population"
+        ].values[0]
 
         # if latest data < previous, ratio < 1, tendency decreasing
         # else ratio > 1, tendency increasing
         data["suicide_tendency"] = latest_suic / max(0.0000001, tsuic)
 
     # Average_total_year_of_schooling_for_adult_population
-    key = "Average_total_year_of_schooling_for_adult_population"
+    key = "Average_total_years_of_schooling_for_adult_population"
     data["avg_schooling_years"] = dfn[dfn["Year"] == maxyear][key].values[0]
     # of your time left to live, on average you spent these in schooling, time
     # well spent
 
-    # poverty share % pop
+    # poverty share % pop, latest only, 1 element
     key = "Share_of_population_below_poverty_line_2USD_per_day"
-    poverty_rate = dfn[dfn["Year"] == maxyear][key]
+    poverty_rate = dfn[dfn["Year"] == maxyear][key].values[0]
     poverty_num = (latest_tpop / 100.0) * poverty_rate
     # there are N persons around you living below the poverty line with
     # less than 2USD per day
     data["num_people_below_poverty"] = poverty_num
 
     # compare with other countries, only one
-    sampled_country = rng.sample(list(dfc["Country"].unique()), 1)
-    dfn = dfc[sampled_country]
+    sampled_country = rng.sample(list(dfc.index.unique()), 1)
+
+    dfn = dfc.loc[sampled_country]
     data["sampled_country"] = sampled_country
 
     # latest value for life expectation (we can do LR later)
@@ -259,7 +275,9 @@ def update_output_div(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
 
-    return "OK"
+    data = generate_stats(df1, df2)
+
+    return 0  # data
 
 
 # =============================================================================

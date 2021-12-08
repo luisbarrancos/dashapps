@@ -101,5 +101,10 @@ class UserData:
         if len(keys) != len(vals):
             return None
 
-        return dict(zip(keys, vals))
+        data = dict()
+        for i, k in enumerate(keys):
+            data[k] = [vals[i]]
+
+        return data
+
 
