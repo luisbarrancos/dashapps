@@ -46,6 +46,7 @@ df = df[df["Year"] >= 2000]
 countries = list(df.index.unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
+app.logger.info(df.columns)
 
 # Year/range slider
 year_min = df["Year"].min()
@@ -81,7 +82,7 @@ data_picker = dcc.Dropdown(
             "label": str(val).replace("_", " ").title(),
             "value": val,
         }
-        for val in df.columns[1:]
+        for val in df.columns[2:len(df.columns)-3]
     ],
     multi=False,
     value=df.columns[1],
