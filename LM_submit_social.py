@@ -97,14 +97,26 @@ layout = html.Form(
             html.H1(style={"text-align": "left"}, children=""),
             # header
             html.Br(),
-            html.P(
+            html.Div(
                 style={
                     "text-align": "left",
                     "font-size": 32,
-                    "margin-left": "20px",
+                    "margin": "auto",
+                    "width": "50%",
+                    "padding": "20px" 
                 },
-                children="Please fill-in the data:",
+                children= [
+                    html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
+                    html.Div([
+                        html.Img(src=app.get_asset_url('twitter.png'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.Img(src=app.get_asset_url('instagram.jpg'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})],
+                    style = {
+                        "textAlign": "center"
+                    })
+                ]
             ),
+                   
             html.Br(),
             html.Div(
                 dbc.Button(
@@ -140,7 +152,7 @@ def update_output_div(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
 
-    return "OK"
+    return ""
 
 # =============================================================================
 # 
