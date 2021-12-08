@@ -23,19 +23,17 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from datetime import datetime, timedelta
-from random import random
+import dash_bootstrap_components as dbc
 
-import random as rng
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+from random import random
 
 from sqlalchemy import create_engine
 
-import dash_bootstrap_components as dbc
-
 # custom classes
 from UserData import UserData
-
-
 
 
 # computed stats
@@ -45,20 +43,22 @@ df = pd.read_sql_table(
     index_col="index",
 )
 
+load_dotenv()
 
+MASTODON_TOKEN = os.environ.get("MASTODON_TOKEN")
 
 # =============================================================================
-# 
+#
 # external_stylesheets = [dbc.themes.DARKLY]
-# 
+#
 # app = dash.Dash(
 #     __name__,
 #     external_stylesheets=external_stylesheets,
 #     # assets_url_path=os.path.join(os.getcwd(), "assets",
 # )
-# 
+#
 # server = app.server
-# 
+#
 # =============================================================================
 
 # app.logger.info(country_options)
@@ -100,32 +100,62 @@ layout = html.Form(
                     "font-size": 32,
                     "margin": "auto",
                     "width": "50%",
-                    "padding": "20px" 
+                    "padding": "20px",
                 },
-                children= [
-                    html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
-                    html.Div([
-                        html.A(
-                            [
-                                html.Img(src=app.get_asset_url('twitter.png'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
-                            ],href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters..."
+                children=[
+                    html.P(
+                        "Share Your Statistics:",
+                        style={"padding-bottom": "2em"}
                         ),
-                        html.Img(src=app.get_asset_url('instagram.jpg'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
-                        html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"}),
-                        html.A( id="a-link",
-                            children=[
-                                html.Img(src=app.get_asset_url('masterdom.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})
-                            ]
-                        ),
-                    ],
-                    style = {
-                        "textAlign": "center"
-                    })
-                ]
+                    html.Div(
+                        [
+                            html.A(
+                                [
+                                    html.Img(
+                                        src=app.get_asset_url("twitter.png"),
+                                        style={
+                                            "height": "140px",
+                                            "width": "140px",
+                                            "padding": "10px",
+                                        },
+                                    ),
+                                ],
+                                href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters...",
+                            ),
+                            html.Img(
+                                src=app.get_asset_url("instagram.jpg"),
+                                style={
+                                    "height": "140px",
+                                    "width": "140px",
+                                    "padding": "10px",
+                                },
+                            ),
+                            html.Img(
+                                src=app.get_asset_url("facebook.png"),
+                                style={
+                                    "height": "140px",
+                                    "width": "140px",
+                                    "padding": "10px",
+                                },
+                            ),
+                            html.A(
+                                id="a-link",
+                                children=[
+                                    html.Img(
+                                        src=app.get_asset_url("masterdom.png"),
+                                        style={
+                                            "height": "140px",
+                                            "width": "140px",
+                                            "padding": "10px",
+                                        },
+                                    )
+                                ],
+                            ),
+                        ],
+                        style={"textAlign": "center"},
+                    ),
+                ],
             ),
-                   
-
-
             html.Br(),
             html.Div(
                 dbc.Button(
@@ -141,7 +171,7 @@ layout = html.Form(
                     children="Submit",
                     color="Primary",
                     className="me-1",
-                    href="/page1"
+                    href="/page1",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
@@ -152,15 +182,15 @@ layout = html.Form(
 
 
 def post_to_mastodon():
-    token = "ZxeAnfo9f2CZEEQJE5dAQoZO3cYuok8hZGVrEpYqkJI"
+    token = MASTODON_TOKEN
     headers = {}
-    data = {} 
+    data = {}
 
-    headers['Authorization'] = 'Bearer' + token
-    url = 'https://botsin.space/api/v1/statuses'
+    headers["Authorization"] = "Bearer" + token
+    url = "https://botsin.space/api/v1/statuses"
 
-    data['status'] = "meow"
-    data['visibility'] = 'public'  
+    data["status"] = "meow"
+    data["visibility"] = "public"
 
     x = requests.post(url=url, data=data, headers=headers)
     app.logger.info(x)
@@ -174,7 +204,7 @@ def post_to_mastodon():
     ],
 )
 def mastodon(n_clicks):
-    app.logger.info("asdasd");
+    app.logger.info("asdasd")
     if n_clicks is None:
         raise PreventUpdate
     else:
@@ -195,7 +225,7 @@ def mastodon(n_clicks):
 #     return ""
 
 # =============================================================================
-# 
+#
 # if __name__ == "__main__":
 #     # app.run_server(debug=True)
 #     app.run_server(
@@ -213,5 +243,5 @@ def mastodon(n_clicks):
 #         # dev_tools_prune_errors=None,
 #         # **flask_run_options
 #     )
-# 
+#
 # =============================================================================
