@@ -10,6 +10,7 @@ from app import app
 
 # for post
 import requests
+import json
 
 # Dataframes, DBs
 import os
@@ -177,20 +178,23 @@ layout = html.Form(
 )
 
 
-def post_to_mastodon(toot):
+def post_to_mastodon(toot,tags):
     token = MASTODON_TOKEN
     headers = {}
     data = {}
+    hashtags = tags
 
     headers["Authorization"] = "Bearer " + token
     url = "https://botsin.space/api/v1/statuses"
 
     # toots are 500 chars max
-    data["status"] = toot
+    data["status"] = toot + hashtags 
     data["visibility"] = "public"
+    
 
-    x = requests.post(url=url, data=data, headers=headers)
-    return x
+    retdata = requests.post(url=url, json=data, headers=headers)
+    
+    return retdata
 
 
 @app.callback(
@@ -230,11 +234,13 @@ def mastodon(n_clicks):
 
     # app.logger.info(toot)
 
+    tags = "\n\n#multimedia\n#databiz"
+
     if n_clicks is None:
         raise PreventUpdate
     else:
-        status_code = post_to_mastodon(toot)
-        app.logger.info("Tried posting, code = ".format(status_code))
+        status_code = post_to_mastodon(toot,tags)
+        app.logger.info("Tried posting, code = {}".format(status_code))
 
     return None
 
