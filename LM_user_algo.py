@@ -160,8 +160,9 @@ def generate_stats(dfc, dfu):
     ].values[0]
 
     population_adjusted = latest_tpop / 100000.0
-    suic_rate = latest_suic / population_adjusted
-    data["suicide_rate"] = suic_rate
+    suic_rate = latest_suic * population_adjusted
+    data["suicide_rate"] = latest_suic
+    data["suicide_num"] = suic_rate
 
     # is it an increasing or decreasing likelyhood?
     if minyear < maxyear:
@@ -208,7 +209,11 @@ def generate_stats(dfc, dfu):
     data["sampled_country_max_age_obj"] = tm
 
     # Compared with someone from Country, you'll live +/- years, abs delta
-    delta = convert_partial_year(abs(data["max_age"] - data["sampled_country_max_age"] + random() * 0.001))
+    delta = convert_partial_year(
+        abs(data["max_age"] -
+            data["sampled_country_max_age"] -
+            random() * 0.001)
+        )
 
     # store delta datetime object
     data["sampled_country_delta_age"] = delta
@@ -266,6 +271,12 @@ layout = html.Form(
                 children=[
                     html.P(id="output-time-left"),
                     html.P(id="output-life-spent"),
+                    html.P(id="output-life-compare"),
+                    html.P(id="output-school"),
+                    html.P(id="output-co2-stats"),
+                    html.P(id="output-poverty"),
+                    html.P(id="output-suicides"),
+
                 ],
             ),
             html.Br(),
@@ -297,7 +308,12 @@ layout = html.Form(
     #Output(component_id="output-user-algo", component_property="component"),
     Output(component_id="output-time-left", component_property="children"),
     Output(component_id="output-life-spent", component_property="children"),
-    # Output(component_id="output-life-compare", component_property="children"),
+    Output(component_id="output-life-compare", component_property="children"),
+    Output(component_id="output-school", component_property="children"),
+    Output(component_id="output-co2-stats", component_property="children"),
+    Output(component_id="output-poverty", component_property="children"),
+    Output(component_id="output-suicides", component_property="children"),
+
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
@@ -335,25 +351,24 @@ def update_output_div(n_clicks):
         "He" if df2["sex"].values[0] == "M" else "She",
         float(data["life_spent"]))
 
-    life_cmp = (
-        "He'll get to live until {} years old. Were he born in {}"
-        + " and he would get to live {} years, {} months, {} days, "
-        + "{} hours, {} seconds {}".format(
+    life_compare = (
+        "He'll get to live until {} years old. Were he born in {}" \
+            " and he would get to live {} years, {} months, {} days, " \
+                "{} hours {}".format(
             data["max_age"],
-            data["sampled_country"],
+            data["sampled_country"][0],
             data["sampled_country_delta_age"].year,
             data["sampled_country_delta_age"].month,
             data["sampled_country_delta_age"].day,
             data["sampled_country_delta_age"].hour,
-            data["sampled_country_delta_age"].min,
             "more." if data["sampled_country_delta_age_positive"] \
                 is True else "less.",
         )
     )
 
     school = (
-        "Of that time, {} years, {} months, {} days, {} hours will be"
-        + "(well) spent in school".format(
+        "Of that time, {} years, {} months, {} days, {} hours will be" \
+            " (well) spent in school".format(
             data["avg_schooling_years"].year,
             data["avg_schooling_years"].month,
             data["avg_schooling_years"].day,
@@ -362,13 +377,13 @@ def update_output_div(n_clicks):
     )
 
     if df2["sex"].values[0] == "F":
-        life_cmp.replace("He'll ", "She'll ")
-        life_cmp.replace(" he ", " she ")
+        life_compare.replace("He'll ", "She'll ")
+        life_compare.replace(" he ", " she ")
 
     co2_stats = (
-        "His last CO2 fingerprint was {.3f} tons and"
-        + " he emitted a combined {.3f} tons of CO2 "
-        + "from {} to {}.".format(
+        "His last CO2 fingerprint was {:.3f} tons and" \
+            " he emitted a combined {:.3f} tons of CO2 " \
+                "from {} to {}.".format(
             data["latest_CO2_fingerprint"],
             data["total_CO2_from_2006_to_2017"],
             data["minyear"],
@@ -385,11 +400,14 @@ def update_output_div(n_clicks):
         data["num_people_below_poverty"],
     )
 
-    suic = "Thought the number of suicides is {}, there are {} suicies".format(
-        "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3
+    suic = "Thought the number of suicides is {}, the last data shows" \
+        " {} suicides.".format(
+        "decreasing" if data["suicide_tendency"] < 1 else "increasing",
+        round(data["suicide_num"])
     )
 
-    return time_left, life_spent  # , life_cmp
+    return time_left, life_spent, life_compare, school, \
+        co2_stats, poverty, suic # , life_cmp
 
 
 # =============================================================================
