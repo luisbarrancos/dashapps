@@ -31,36 +31,10 @@ from sqlalchemy import create_engine
 import dash_bootstrap_components as dbc
 
 
-from mastodon import Mastodon
-
-
 # custom classes
 from UserData import UserData
 
 
-def tootTheTweet(tweet):
-
-    host_instance = "https://botsin.space"
-    token = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEE"
-
-    headers = {}
-    headers["Authorization"] = "Bearer " + token
-
-    data = {}
-    data["status"] = tweet["text"]
-    data["visibility"] = "public"
-
-    response = requests.post(
-        url=host_instance + "/api/v1/statuses", data=data, headers=headers
-    )
-
-    if response.status_code == 200:
-
-        return True
-
-    else:
-
-        return False
 
 
 # computed stats
