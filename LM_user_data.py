@@ -21,6 +21,8 @@ from dash import html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+from sqlalchemy import create_engine
+
 import dash_bootstrap_components as dbc
 
 # custom classes
@@ -104,6 +106,7 @@ layout = html.Form(
                 # child of input area frame | input fields
                 children=[
                     dcc.Input(
+                        id="user_name",
                         style={
                             "font-size": 22,
                             # "margin-left": "20px",
@@ -111,8 +114,7 @@ layout = html.Form(
                             #    "background-color" : "#000000",
                             #    "color" : "#ffffff"
                         },
-                        id="user_name",
-                        value="Lisa",
+                        value=None,
                         type="text",
                         inputMode="latin-name",
                         placeholder="Name",
@@ -121,6 +123,7 @@ layout = html.Form(
                     html.Br(),
                     html.Br(),
                     dcc.Input(
+                        id="user_age",
                         style={
                             "font-size": 22,
                             # "margin-left": "20px",
@@ -128,39 +131,35 @@ layout = html.Form(
                             #    "background-color" : "#000000",
                             #    "color" : "#ffffff"
                         },
-                        id="user_age",
                         type="number",
                         min=0,
                         max=120,
                         step=1,
                         inputMode="numeric",
-                        value=12,
+                        value=None,
                         placeholder="Age",
                     ),
                     # period frequency, float?
                     html.Br(),
                     html.Br(),
                     dcc.Dropdown(
-                        # style= dropdown_style,
                         id="birthplace",
                         options=country_options,
-                        value="Malaysia",
+                        value=None,
                         placeholder="Birthplace (Country)",
                     ),
                     # period frequency, float?
                     html.Br(),
                     dcc.Dropdown(
                         id="residence",
-                        # style=dropdown_style,
                         options=country_options,
-                        value="Portugal",
+                        value=None,
                         placeholder="Country of Residence",
                     ),
                     html.Br(),
                     dcc.Dropdown(
-                        # style=dropdown_style,
                         id="sex",
-                        value="F",
+                        value=None,
                         options=[
                             {"label": "M", "value": "M"},
                             {"label": "F", "value": "F"},
@@ -169,9 +168,8 @@ layout = html.Form(
                     ),
                     html.Br(),
                     dcc.Dropdown(
-                        # style=dropdown_style,
                         id="veggie",
-                        value="N",
+                        value=None,
                         options=[
                             {"label": "Y", "value": "Y"},
                             {"label": "N", "value": "N"},
@@ -180,9 +178,8 @@ layout = html.Form(
                     ),
                     html.Br(),
                     dcc.Dropdown(
-                        # style=dropdown_style,
                         id="driver",
-                        value="Y",
+                        value=None,
                         options=[
                             {"label": "Y", "value": "Y"},
                             {"label": "N", "value": "N"},
@@ -191,9 +188,8 @@ layout = html.Form(
                     ),
                     html.Br(),
                     dcc.Dropdown(
-                        # style=dropdown_style,
                         id="smoker",
-                        value="Y",
+                        value=None,
                         options=[
                             {"label": "Y", "value": "Y"},
                             {"label": "N", "value": "N"},
@@ -205,6 +201,7 @@ layout = html.Form(
             html.Br(),
             html.Div(
                 dbc.Button(
+                    id="submit-button-state",
                     style={
                         "font-size": 22,
                         "margin-left": "20px",
@@ -212,7 +209,6 @@ layout = html.Form(
                         "background-color": "#111",
                         "color": "#ffffff",
                     },
-                    id="submit-button-state",
                     n_clicks=0,
                     children="Submit",
                     color="Primary",
@@ -231,14 +227,16 @@ layout = html.Form(
 
 # Narrow options on dropdown
 @app.callback(
-    Output("birthplace", "options"), Input("birthplace", "search_value"))
+    Output("birthplace", "options"),
+    Input("birthplace", "search_value"))
 def update_options_b(search_value):
     if not search_value:
         raise PreventUpdate
     return [o for o in country_options if search_value in o["label"]]
 
 
-@app.callback(Output("residence", "options"), Input("residence", "search_value"))
+@app.callback(Output("residence", "options"),
+              Input("residence", "search_value"))
 def update_options_r(search_value):
     if not search_value:
         raise PreventUpdate
@@ -260,7 +258,8 @@ def update_options_r(search_value):
     ],
 )
 def update_output_div(
-    user_name, user_age, birthplace, residence, sex, veggie, driver, smoker, n_clicks
+    user_name, user_age, birthplace, residence,
+    sex, veggie, driver, smoker, n_clicks
 ):
     if (
         user_name is None
@@ -279,10 +278,27 @@ def update_output_div(
         user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
     )
 
-    if userdata_.check_data() is True:
-        return "Output: {}".format(userdata_.get_data())
+    # for now, create a dataframe from user data/dictionary and write to
+    # a sql DB, then load it.
+    df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="index")
 
-    return "Failed check"
+    sqldb = os.path.join(os.getcwd(), "assets", "userdata.sql")
+    engine = create_engine("sqlite:///" + sqldb, echo = False)
+    conn = engine.connect()
+
+    df.to_sql("UserData", conn, if_exists="replace")
+    conn.close()
+
+
+    #app.logger.info(df)
+
+    # DEBUG
+    #if userdata_.check_data() is True:
+    #    #return "Output: {}".format(userdata_.get_data())
+    #    return userdata_.get_data()
+    ##
+    #return "Failed check"
+    #return userdata_.get_dict()
 
 # =============================================================================
 # 

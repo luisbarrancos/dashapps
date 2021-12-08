@@ -268,10 +268,11 @@ def update_output_div(
         user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
     )
 
-    if userdata_.check_data() is True:
-        return "Output: {}".format(userdata_.get_data())
-
-    return "Failed check"
+    #if userdata_.check_data() is True:
+    #    return "Output: {}".format(userdata_.get_data())
+    #
+    # return "Failed check"
+    return userdata_.get_dict()
 
 
 if __name__ == "__main__":

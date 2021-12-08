@@ -90,3 +90,16 @@ class UserData:
         data = self.get_data()
         check = filter(lambda x: x is not None, data)
         return True if len(list(check)) > 0 else False
+
+    def get_dict(self):
+        keys = [
+            "name", "age", "birthplace", "residence",
+            "sex", "veggie", "driver", "smoker"
+            ]
+        vals = self.get_data()
+        
+        if len(keys) != len(vals):
+            return None
+
+        return dict(zip(keys, vals))
+
