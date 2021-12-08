@@ -126,7 +126,7 @@ def generate_stats(dfc, dfu):
     data["target_data"] = current_date + timedelta(seconds=delta_secs)
 
     # build time left string from delta t3
-    data["time_left"] = t1
+    data["time_left"] = t3
     data["time_left_str"] = (
         "You're expected to live another {} year, "
         + "{} month, {} days and {} hours".format(
@@ -208,7 +208,7 @@ def generate_stats(dfc, dfu):
     data["sampled_country_max_age_obj"] = tm
 
     # Compared with someone from Country, you'll live +/- years, abs delta
-    delta = convert_partial_year(abs(data["max_age"] - data["sampled_country_max_age"]))
+    delta = convert_partial_year(abs(data["max_age"] - data["sampled_country_max_age"] + random() * 0.001))
 
     # store delta datetime object
     data["sampled_country_delta_age"] = delta
@@ -294,8 +294,9 @@ layout = html.Form(
 
 
 @app.callback(
-    Output(component_id="output-user-algo", component_property="component"),
-    # Output(component_id="output-time-left", component_property="children"),
+    #Output(component_id="output-user-algo", component_property="component"),
+    Output(component_id="output-time-left", component_property="children"),
+    Output(component_id="output-life-spent", component_property="children"),
     # Output(component_id="output-life-compare", component_property="children"),
     [
         Input(component_id="submit-button-state", component_property="n_clicks"),
@@ -306,19 +307,24 @@ def update_output_div(n_clicks):
     #    raise PreventUpdate
 
     data = generate_stats(df1, df2)
+    app.logger.info(data)
 
     time_left = (
-        "{}, {} years old, natural from {} has "
-        + "approximately {} years,"
-        + " {} months and {} days left to live".format(
+        "{}, {} years old, natural from {} has " \
+         "approximately {} years," \
+             " {} months and {} days left to live.".format(
             df2["name"].values[0],
             df2["age"].values[0],
             df2["birthplace"].values[0],
             data["time_left"].year,
             data["time_left"].month,
-            data["time_left"].hour
+            data["time_left"].day,
         )
     )
+
+    life_spent = "{} spent {} of his lifetime already.".format(
+        "he" if df2["sex"].values[0] == "M" else "F",
+        data["life_spent"])
 
     life_cmp = (
         "He'll get to live until {} years old. Were he born in {}"
@@ -374,7 +380,7 @@ def update_output_div(n_clicks):
         "decreasing" if data["suicide_tendency"] < 1 else "increasing", 2, 3
     )
 
-    return 0  # time_left  # , life_cmp
+    return time_left, life_spent  # , life_cmp
 
 
 # =============================================================================

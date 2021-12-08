@@ -20,6 +20,12 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+from datetime import datetime, timedelta
+from random import random
+
+import random as rng
+
+from sqlalchemy import create_engine
 
 import dash_bootstrap_components as dbc
 
@@ -32,11 +38,18 @@ from UserData import UserData
 # So, we load it directly and get the countries.
 # There are 158 here, but the intersection gives us 159
 #
-df = pd.DataFrame()
-df = pd.read_sql_table(
+df1 = pd.read_sql_table(
     "Deadline_database", "sqlite:///deadline_database_nonans.db", index_col="Country"
 )
-countries = list(df.index.unique())
+
+df2 = pd.read_sql_table(
+    "UserData",
+    "sqlite:///" + os.path.join(os.getcwd(), "assets", "userdata.sql"),
+    index_col="index",
+)
+
+
+
 # =============================================================================
 # 
 # external_stylesheets = [dbc.themes.DARKLY]
@@ -50,7 +63,6 @@ countries = list(df.index.unique())
 # server = app.server
 # 
 # =============================================================================
-country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
 dropdown_style = {
