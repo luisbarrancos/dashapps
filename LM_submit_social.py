@@ -8,6 +8,9 @@ Created on Sat Dec  4 11:12:43 2021
 
 from app import app
 
+# for post
+import requests
+
 # Dataframes, DBs
 import os
 import pandas as pd
@@ -114,7 +117,13 @@ layout = html.Form(
                             ],href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters..."
                         ),
                         html.Img(src=app.get_asset_url('instagram.jpg'), style={'height':'140px', 'width':'140px', "padding":"10px"}),
-                        html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})],
+                        html.Img(src=app.get_asset_url('facebook.png'),style={'height':'140px', 'width':'140px', "padding":"10px"}),
+                        html.A( id="a-link",
+                            children=[
+                                html.Img(src=app.get_asset_url('masterdom.png'),style={'height':'140px', 'width':'140px', "padding":"10px"})
+                            ]
+                        ),
+                    ],
                     style = {
                         "textAlign": "center"
                     })
@@ -148,17 +157,48 @@ layout = html.Form(
 )
 
 
+def post_to_mastodon():
+    token = "ZxeAnfo9f2CZEEQJE5dAQoZO3cYuok8hZGVrEpYqkJI"
+    headers = {}
+    data = {} 
+
+    headers['Authorization'] = 'Bearer' + token
+    url = 'https://botsin.space/api/v1/statuses'
+
+    data['status'] = "meow"
+    data['visibility'] = 'public'  
+
+    x = requests.post(url=url, data=data, headers=headers)
+    app.logger.info(x)
+    return ""
+
+
 @app.callback(
     Output(component_id="output-submit-social", component_property="children"),
     [
-        Input(component_id="submit-button-state", component_property="n_clicks"),
+        Input(component_id="a-link", component_property="n_clicks"),
     ],
 )
-def update_output_div(n_clicks):
+def mastodon(n_clicks):
+    app.logger.info("asdasd");
     if n_clicks is None:
         raise PreventUpdate
-
+    else:
+        post_to_mastodon()
     return ""
+
+
+# @app.callback(
+#     Output(component_id="output-submit-social", component_property="children"),
+#     [
+#         Input(component_id="submit-button-state", component_property="n_clicks"),
+#     ],
+# )
+# def update_output_div(n_clicks):
+#     if n_clicks is None:
+#         raise PreventUpdate
+
+#     return ""
 
 # =============================================================================
 # 
