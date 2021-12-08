@@ -36,10 +36,10 @@ datapath = os.path.join(os.getcwd(), "resources", "dbs")
 df1 = pd.read_sql_table(
     "Deadline_database",
     "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-    index_col = "Country"
-    )
+    index_col="Country",
+)
 
-# df1.dropna(inplace=True)
+df1.dropna(inplace=True)
 df1.sort_values(by=["Year"], inplace=True)
 
 # problem is in some dbs, like nonans_geo, we have 600 years of data
@@ -51,7 +51,7 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 df2 = pd.read_sql_table(
     "UserData",
-    "sqlite:///" + os.path.join(os.getcwd(), "assets", "userdata.sql"),
+    "sqlite:///" + os.path.join(datapath, "userdata.sql"),
     index_col="index",
 )
 
@@ -367,17 +367,17 @@ def update_output_div(n_clicks):
         co2_stats.replace("His ", "Her ")
         co2_stats.replace(" his ", " her ")
 
-    poverty = "Around {}, {} people below the poverty line.".format(
-        "him" if df2["sex"].values[0] == "M" else "her",
-        data["num_people_below_poverty"],
-    )
-
-    suic = (
-        "The number of suicides is {}, but the last data shows"
-        " {} suicides.".format(
-            "decreasing" if data["suicide_tendency"] < 1 else "increasing",
-            round(data["suicide_num"]),
+    if data["num_people_below_poverty"] == 0:
+        poverty = "No poverty data available."
+    else:
+        poverty = "Around {}, {} people below the poverty line.".format(
+            "him" if df2["sex"].values[0] == "M" else "her",
+            data["num_people_below_poverty"],
         )
+
+    suic = "The number of suicides is {}, the last data shows" " {} suicides.".format(
+        "decreasing" if data["suicide_tendency"] < 1 else "increasing",
+        round(data["suicide_num"]),
     )
 
     # create a dataframe with the formatted output for social media
