@@ -5,23 +5,17 @@ Created on Mon Dec  6 12:35:29 2021
 
 @author: cgwork
 """
+import os
+
+import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.graph_objs as go
+from dash import dcc, html
+from dash.dependencies import Input, Output
+
 from app import app
 
-import logging
-import os
-import pandas as pd
-
 # import numpy as np
-
-import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
-
-import plotly.express as px
-import plotly.graph_objs as go
 
 
 # All the code for data filtering, processing, done in jupyterlab
@@ -33,31 +27,18 @@ datapath = os.path.join(os.getcwd(), "resources", "dbs")
 df = pd.read_sql_table(
     "Deadline_database",
     "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-    index_col = "Country"
-    )
+    # index_col = "Country"
+)
 
-# df.dropna(inplace=True)
-df.sort_values(by=["Year"], inplace=True)
+df.dropna(inplace=True)
+# df.sort_values(by=["Year"], inplace=True)
 
 # problem is in some dbs, like nonans_geo, we have 600 years of data
 # leading to nulls everywhere except the last 15 years or so for most cols
 df = df[df["Year"] >= 2000]
 
-countries = list(df.index.unique())
+countries = list(df["Country"].unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
-
-
-# Dash
-# =============================================================================
-# external_stylesheets = [dbc.themes.DARKLY]
-# 
-# app = dash.Dash(
-#     __name__,
-#     external_stylesheets=external_stylesheets,
-#     assets_url_path=os.path.join(os.getcwd(), "assets"),
-# )
-# app.title = "Deadline"
-# =============================================================================
 
 
 # Create the list of years for the year drop-down
@@ -69,12 +50,10 @@ for year in df["Year"].unique():
 scatter_layout = go.Layout(
     title="Life Expectancy vs Common Statistics",
     xaxis={
-        #"type": "log",
+        # "type": "log",
         "title": "Life Satisfaction"
-        },
-    yaxis={
-        "title": "Life Expectancy"
-        },
+    },
+    yaxis={"title": "Life Expectancy"},
     margin={"l": 60, "b": 60, "t": 60, "r": 60},
     legend={"x": 0, "y": 1},
     hovermode="closest",
@@ -90,16 +69,11 @@ scatter_graph = dcc.Graph(id="scatter-graph", config={"displaylogo": False})
 
 # fields available for marker size
 fields = {
-    "Average_total_years_of_schooling_for_adult_population" :
-        "Avg Total School Year",
-    "Mortality_rate_under_5_per_1000_live_births" :
-        "Mortality Under 5 (per 1000)",
-    "Suicidy_mortality_rate_per_100000_population" :
-        "Suicidy Mortality (per 100000)",
-    "Share_of_population_below_poverty_line_2USD_per_day" :
-        "% Below Poverty (2USD/day)",
-    "Life_expectancy_at_birth" :
-        "Life Expectancy at Birth",
+    "Average_total_years_of_schooling_for_adult_population": "Avg Total School Year",
+    "Mortality_rate_under_5_per_1000_live_births": "Mortality Under 5 (per 1000)",
+    "Suicidy_mortality_rate_per_100000_population": "Suicidy Mortality (per 100000)",
+    "Share_of_population_below_poverty_line_2USD_per_day": "% Below Poverty (2USD/day)",
+    "Life_expectancy_at_birth": "Life Expectancy at Birth",
 }
 
 # hoverdata = [
@@ -152,7 +126,7 @@ button = dbc.Button(
     children="Next",
     color="Primary",
     className="me-1",
-    href="/page4"
+    href="/page4",
 )
 
 
@@ -244,25 +218,3 @@ def update_figure(datafield, years, n_clicks):
         "data": traces,
         "layout": scatter_layout,
     }
-
-# =============================================================================
-# 
-# if __name__ == "__main__":
-#     # app.run_server(debug=True)
-#     app.run_server(
-#         host="127.0.0.1",
-#         port="8050",
-#         proxy=None,
-#         debug=True,
-#         # dev_tools_props_check=None,
-#         # dev_tools_serve_dev_bundles=None,
-#         # dev_tools_hot_reload=None,
-#         # dev_tools_hot_reload_interval=None,
-#         # dev_tools_hot_reload_watch_interval=None,
-#         # dev_tools_hot_reload_max_retry=None,
-#         # dev_tools_silence_routes_logging=None,
-#         # dev_tools_prune_errors=None,
-#         # **flask_run_options
-#     )
-# 
-# =============================================================================

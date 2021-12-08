@@ -33,8 +33,8 @@ datapath = os.path.join(os.getcwd(), "resources", "dbs")
 df = pd.read_sql_table(
     "Deadline_database",
     "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-    index_col = "Country"
-    )
+    index_col="Country",
+)
 
 # df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
@@ -45,8 +45,6 @@ df = df[df["Year"] >= 2000]
 
 countries = list(df.index.unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
-
-app.logger.info(df.columns)
 
 # Year/range slider
 year_min = df["Year"].min()
@@ -82,10 +80,10 @@ data_picker = dcc.Dropdown(
             "label": str(val).replace("_", " ").title(),
             "value": val,
         }
-        for val in df.columns[2:len(df.columns)-3]
+        for val in df.columns[2 : len(df.columns) - 3]
     ],
     multi=False,
-    value=df.columns[1],
+    value=df.columns[2],
     placeholder="Statistic",
     style={
         "font-size": 14,
@@ -119,7 +117,6 @@ scatter_graph = dcc.Graph(
 
 # Layout
 scatter_layout = go.Layout(
-    title="Life Expectancy (Yearly Basis)",
     xaxis={
         # "type": "log",
         # "title": "Year",
@@ -225,5 +222,7 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     )
 
     line_fig.update_layout(scatter_layout)
-    return line_fig
+    line_fig.update_layout(title = datafield.replace("_", " ").title())
+    line_fig.update_layout(yaxis_title = datafield.replace("_", " ").title())
 
+    return line_fig
