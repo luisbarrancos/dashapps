@@ -10,7 +10,8 @@ from app import app
 
 # for post
 import requests
-import json
+import urllib
+
 
 # Dataframes, DBs
 import os
@@ -117,7 +118,7 @@ layout = html.Form(
                                         },
                                     ),
                                 ],
-                                href="https://twitter.com/intent/tweet?text=This%20is%20an%20example%20of%20a%20pre-written%20tweet-%20don%27t%20forget%20that%20it%20needs%20to%20be%20less%20than%20280%20characters...",
+                                href="https://twitter.com/intent/tweet?text=" + urllib.parse.quote((df["time_left"].values[0] + '\n\n' + df["life_spent"].values[0] + '\n\n' + df["life_compare"].values[0] + '\n\n' + df["school"].values[0] + '\n\n' + df["co2_stats"].values[0])[:276] + ' ...',safe="/"),
                             ),
                             html.Img(
                                 src=app.get_asset_url("instagram.jpg"),
@@ -139,14 +140,15 @@ layout = html.Form(
                                 id="a-link",
                                 children=[
                                     html.Img(
-                                        src=app.get_asset_url("masterdom.png"),
+                                        src=app.get_asset_url("mastodon.png"),
                                         style={
                                             "height": "140px",
                                             "width": "140px",
                                             "padding": "10px",
+                                            "cursor": "pointer",
                                         },
                                     )
-                                ],
+                                ]
                             ),
                         ],
                         style={"textAlign": "center"},
