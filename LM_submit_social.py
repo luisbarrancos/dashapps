@@ -211,7 +211,7 @@ def mastodon(n_clicks, summary):
 
     status_code = post_to_mastodon(toot, tags)
     app.logger.info("Tried posting, code = {}".format(status_code))
-    webbrowser.open(url="https://botsin.space/@deadlineproject",new=2, autoraise=True)
+    # webbrowser.open(url="https://botsin.space/@deadlineproject",new=2, autoraise=True)
 
     return None
 
