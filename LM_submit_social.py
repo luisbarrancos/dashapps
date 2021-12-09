@@ -197,6 +197,11 @@ def post_to_mastodon(toot, tags):
     ],
 )
 def mastodon(n_clicks):
+    df = pd.read_sql_table(
+        "UserStats",
+        "sqlite:///" + os.path.join(datapath, "computed_stats.db"),
+        index_col="index",
+    )
 
     toot = (
         df["time_left"].values[0]
@@ -224,6 +229,9 @@ def mastodon(n_clicks):
         # + "\n"
         # + df["suic"]
         # + "\n"
+
+    if len(toot + poverty) < 477: # all URLS are 23 chars long, all
+        toot += "https://datavizmultlab.herokuapp.com"
 
     # app.logger.info(toot)
 

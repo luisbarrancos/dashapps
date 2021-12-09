@@ -302,6 +302,24 @@ layout = html.Form(
 def update_output_div(n_clicks):
     # if n_clicks is None:
     #    raise PreventUpdate
+    df1 = pd.read_sql_table(
+        "Deadline_database",
+        "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
+        index_col="Country",
+    )
+
+    df1.dropna(inplace=True)
+    # df1.sort_values(by=["Year"], inplace=True)
+
+    # problem is in some dbs, like nonans_geo, we have 600 years of data
+    # leading to nulls everywhere except the last 15 years or so for most cols
+    df1 = df1[df1["Year"] >= 2000]
+
+    df2 = pd.read_sql_table(
+        "UserData",
+        "sqlite:///" + os.path.join(datapath, "userdata.db"),
+        index_col="index",
+    )
 
     data = generate_stats(df1, df2)
     # app.logger.info(data)
@@ -323,11 +341,14 @@ def update_output_div(n_clicks):
     )
 
     life_compare = (
-        "He'll live until {} years old. Were he born in {}"
-        " he would live {} years, {} months, {} days, "
+        "{} live until {} years old. Were {} born in {}"
+        " {} would live {} years, {} months, {} days, "
         "{} hours {}".format(
+            "He'll" if df2["sex"].values[0] == "M" else "She'll",
             data["max_age"],
+            "he" if df2["sex"].values[0] == "M" else "she",
             data["sampled_country"][0],
+            "he" if df2["sex"].values[0] == "M" else "she",
             data["sampled_country_delta_age"].year,
             data["sampled_country_delta_age"].month,
             data["sampled_country_delta_age"].day,
@@ -336,30 +357,26 @@ def update_output_div(n_clicks):
         )
     )
 
+
     school = "{} years, {} months, {} days were " " (well) spent in school".format(
         data["avg_schooling_years"].year,
         data["avg_schooling_years"].month,
         data["avg_schooling_years"].day,
     )
 
-    if df2["sex"].values[0] == "F":
-        life_compare.replace("He'll ", "She'll ")
-        life_compare.replace(" he ", " she ")
 
     co2_stats = (
-        "His last CO2 fingerprint was {:.3f} tons and"
-        " he emitted {:.3f} tons of CO2 "
+        "{} last CO2 fingerprint was {:.3f} tons and"
+        " {} emitted {:.3f} tons of CO2 "
         "from {} to {}.".format(
+            "His" if df2["sex"].values[0] == "M" else "Her",
             data["latest_CO2_fingerprint"],
+            "he" if df2["sex"].values[0] == "M" else "she",
             data["total_CO2"],
             data["minyear"],
             data["maxyear"],
         )
     )
-
-    if df2["sex"].values[0] == "F":
-        co2_stats.replace("His ", "Her ")
-        co2_stats.replace(" his ", " her ")
 
     if data["num_people_below_poverty"] == 0:
         poverty = "No poverty data available."
