@@ -52,15 +52,15 @@ if __name__ == "__main__":
     app.run_server(
         host="127.0.0.1",
         port="8050",
-        #proxy=None,
-        debug=False,
-        #dev_tools_props_check=None,
-        #dev_tools_serve_dev_bundles=None,
-        #dev_tools_hot_reload=None,
-        #dev_tools_hot_reload_interval=None,
-        #dev_tools_hot_reload_watch_interval=None,
-        #dev_tools_hot_reload_max_retry=None,
-        #dev_tools_silence_routes_logging=None,
-        #dev_tools_prune_errors=None,
-        #**flask_run_options
+        proxy=None,
+        debug=True,
+        # dev_tools_props_check=None,
+        # dev_tools_serve_dev_bundles=None,
+        # dev_tools_hot_reload=None,
+        # dev_tools_hot_reload_interval=None,
+        # dev_tools_hot_reload_watch_interval=None,
+        # dev_tools_hot_reload_max_retry=None,
+        # dev_tools_silence_routes_logging=None,
+        # dev_tools_prune_errors=None,
+        # **flask_run_options
     )
