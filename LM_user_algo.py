@@ -17,6 +17,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 from sqlalchemy import create_engine
 
 from app import app
@@ -43,12 +44,17 @@ df1 = df1[df1["Year"] >= 2000]
 countries = list(df1.index.unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
-df2 = pd.read_sql_table(
-    "UserData",
-    "sqlite:///" + os.path.join(datapath, "userdata.db"),
-    index_col="index",
-)
 
+
+summary = {
+    "time_left" : "",
+    "life_spent" : "",
+    "life_compare" : "",
+    "school" : "",
+    "co2_stats" : "",
+    "poverty" : "",
+    "suic" : "",
+}
 
 # country dropdowns require list of unique names
 countries = list(df1.index.unique())
@@ -210,119 +216,24 @@ def generate_stats(dfc, dfu):
 def start_countdown(target_date):
     countdown = target_date - datetime.now()
 
-
-### Buttons
-# buttons = html.Div(
-#    [
-#        dbc.Button("Regular", color="primary", className="me-1"),
-#        dbc.Button("Active", color="primary", active=True, className="+me-1"),
-#        dbc.Button("Disabled", color="primary", disabled=True),
-#    ]
-# )
-
-# layout
-layout = html.Form(
-    html.Div(
-        style={
-            "font-family": "Sawasdee",
-            "font-size": 22,
-            "color": "#ffffff",
-            "background-color": "#111111",
-        },
-        children=[
-            html.Br(),
-            html.H1(style={"text-align": "left"}, children=""),
-            # header
-            html.Br(),
-            html.P(
-                style={
-                    "text-align": "left",
-                    "font-size": 32,
-                    "margin-left": "20px",
-                },
-                children="Available data shows that",
-            ),
-            html.Div(
-                id="output-textbox-div",
-                style={
-                    "font-family": "Sawasdee",
-                    "font-size": 18,
-                    "color": "#ffffff",
-                    "background-color": "#111111",
-                    "padding": "5%",
-                },
-                children=[
-                    html.P(id="output-time-left"),
-                    html.P(id="output-life-spent"),
-                    html.P(id="output-life-compare"),
-                    html.P(id="output-school"),
-                    html.P(id="output-co2-stats"),
-                    html.P(id="output-poverty"),
-                    html.P(id="output-suicides"),
-                ],
-            ),
-            html.Br(),
-            html.Div(
-                dbc.Button(
-                    style={
-                        "font-size": 22,
-                        "margin-left": "20px",
-                        "margin-right": "80px",
-                        "background-color": "#111",
-                        "color": "#ffffff",
-                    },
-                    id="submit-button-state",
-                    n_clicks=0,
-                    children="Submit",
-                    color="Primary",
-                    className="me-1",
-                    href="/page6",
-                ),
-                className="d-grip gap-2 d-md-flex justify-content-md-end",
-            ),
-            html.Div(id="output-user-algo"),
-        ],
-    )
-)
+def summarize_data(user_data_local): 
+    app.logger.info("========user_data_local=====")
+    app.logger.info(user_data_local)
+    app.logger.info("===========================")
+    df2 = pd.DataFrame({
+        "name": [user_data_local[0]],
+        "age": [user_data_local[1]],
+        "birthplace": [user_data_local[2]],
+        "residence": [user_data_local[3]],
+        "sex": [user_data_local[4]],
+        "veggie": [user_data_local[5]],
+        "driver": [user_data_local[6]],
+        "smoker": [user_data_local[7]],
+    },)
 
 
-@app.callback(
-    # Output(component_id="output-user-algo", component_property="component"),
-    Output(component_id="output-time-left", component_property="children"),
-    Output(component_id="output-life-spent", component_property="children"),
-    Output(component_id="output-life-compare", component_property="children"),
-    Output(component_id="output-school", component_property="children"),
-    Output(component_id="output-co2-stats", component_property="children"),
-    Output(component_id="output-poverty", component_property="children"),
-    Output(component_id="output-suicides", component_property="children"),
-    [
-        Input(component_id="submit-button-state", component_property="n_clicks"),
-    ],
-)
-def update_output_div(n_clicks):
-    # if n_clicks is None:
-    #    raise PreventUpdate
-    df1 = pd.read_sql_table(
-        "Deadline_database",
-        "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-        index_col="Country",
-    )
-
-    df1.dropna(inplace=True)
-    # df1.sort_values(by=["Year"], inplace=True)
-
-    # problem is in some dbs, like nonans_geo, we have 600 years of data
-    # leading to nulls everywhere except the last 15 years or so for most cols
-    df1 = df1[df1["Year"] >= 2000]
-
-    df2 = pd.read_sql_table(
-        "UserData",
-        "sqlite:///" + os.path.join(datapath, "userdata.db"),
-        index_col="index",
-    )
 
     data = generate_stats(df1, df2)
-    # app.logger.info(data)
 
     time_left = (
         "{}, {} years old, natural from {} has {} years,"
@@ -393,21 +304,172 @@ def update_output_div(n_clicks):
 
     # create a dataframe with the formatted output for social media
     strdata = {
-        "time_left": [time_left],
-        "life_spent": [life_spent],
-        "life_compare": [life_compare],
-        "school": [school],
-        "co2_stats": [co2_stats],
-        "poverty": [poverty],
-        "suic": [suic],
+        "time_left": time_left,
+        "life_spent": life_spent,
+        "life_compare": life_compare,
+        "school": school,
+        "co2_stats": co2_stats,
+        "poverty": poverty,
+        "suic": suic,
     }
-    df = pd.DataFrame.from_dict(strdata, orient="columns")
+    #df = pd.DataFrame.from_dict(strdata, orient="columns")
 
-    # store into a DB, this needs to be done better
-    sqldb = os.path.join(datapath, "computed_stats.db")
-    engine = create_engine("sqlite:///" + sqldb, echo=False)
-    conn = engine.connect()
-    df.to_sql("UserStats", conn, if_exists="replace")
-    conn.close()
+    # summary = {
+    #     "time_left" : "",
+    #     "life_spent" : "",
+    #     "life_compare" : "",
+    #     "school" : "",
+    #     "co2_stats" : "",
+    #     "poverty" : "",
+    #     "suic" : "",
+    # }
 
-    return time_left, life_spent, life_compare, school, co2_stats, poverty, suic
+    return strdata
+    
+
+
+layout = html.Form(
+    html.Div(
+        style={
+            "font-family": "Sawasdee",
+            "font-size": 22,
+            "color": "#ffffff",
+            "background-color": "#111111",
+        },
+        children=[
+            html.Br(),
+            html.H1(style={"text-align": "left"}, children=""),
+            # header
+            html.Br(),
+            html.P(
+                style={
+                    "text-align": "left",
+                    "font-size": 32,
+                    "margin-left": "20px",
+                },
+                children="Available data shows that",
+            ),
+            html.Div(
+                id="output-textbox-div",
+                style={
+                    "font-family": "Sawasdee",
+                    "font-size": 18,
+                    "color": "#ffffff",
+                    "background-color": "#111111",
+                    "padding": "5%",
+                },
+                children=[
+                    html.P(id="output-time-left"),
+                    html.P(id="output-life-spent"),
+                    html.P(id="output-life-compare"),
+                    html.P(id="output-school"),
+                    html.P(id="output-co2-stats"),
+                    html.P(id="output-poverty"),
+                    html.P(id="output-suicides"),
+                ],
+            ),
+            html.Br(),
+            html.Div(
+                dbc.Button(
+                    style={
+                        "font-size": 22,
+                        "margin-left": "20px",
+                        "margin-right": "80px",
+                        "background-color": "#111",
+                        "color": "#ffffff",
+                    },
+                    id="submit-button-state",
+                    n_clicks=0,
+                    children="Submit",
+                    color="Primary",
+                    className="me-1",
+                    href="/page6",
+                ),
+                className="d-grip gap-2 d-md-flex justify-content-md-end",
+                id="div_submit"
+            ),
+            html.Div(
+                id="div_restart",
+                children=[
+
+                ],
+            ),
+            html.Div(id="output-user-algo"),
+        ],
+    )
+)
+
+
+@app.callback(
+    Output("dccstore_summary", "data"),
+    [
+        Input("dccstore_user","data")
+    ],
+)
+def trigger_stats_generation(user_data):
+    if user_data is None:
+       raise PreventUpdate
+
+    #app.logger.info("summarizing1 ... ")
+    data = summarize_data(user_data)
+    #app.logger.info(data)
+    #app.logger.info("--end1--- ... ")
+
+    return data
+
+@app.callback(
+    Output(component_id="output-time-left", component_property="children"),
+    Output(component_id="output-life-spent", component_property="children"),
+    Output(component_id="output-life-compare", component_property="children"),
+    Output(component_id="output-school", component_property="children"),
+    Output(component_id="output-co2-stats", component_property="children"),
+    Output(component_id="output-poverty", component_property="children"),
+    Output(component_id="output-suicides", component_property="children"),
+    Output(component_id="div_submit", component_property="children"),
+    [
+        Input("dccstore_summary","data"),
+        Input('url', 'pathname')
+    ],
+)
+def update_display_summary(summary,urlpath):
+    app.logger.info(urlpath)
+    # dynamically add restart/submit  based on whether data exists
+    restart =  dbc.Button(
+                style={
+                    "font-size": 22,
+                    "margin-left": "20px",
+                    "margin-right": "80px",
+                    "background-color": "#111",
+                    "color": "#ffffff",
+                },
+                id="submit-button-state",
+                n_clicks=0,
+                children="Restart",
+                color="Primary",
+                className="me-1",
+                href="/page0",
+                ),
+    submit =  dbc.Button(
+                style={
+                    "font-size": 22,
+                    "margin-left": "20px",
+                    "margin-right": "80px",
+                    "background-color": "#111",
+                    "color": "#ffffff",
+                },
+                id="submit-button-state",
+                n_clicks=0,
+                children="Submit",
+                color="Primary",
+                className="me-1",
+                href="/page6",
+                ),
+    if summary is None:
+        if urlpath == "/page5":
+            return "There is no user data. Please restart.", "", "", "", "", "", "", restart
+        else:
+            raise PreventUpdate
+
+    return summary["time_left"], summary["life_spent"],summary["life_compare"],summary["school"],summary["co2_stats"], summary["poverty"], summary["suic"], submit
+
+

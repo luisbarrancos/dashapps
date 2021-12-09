@@ -13,6 +13,7 @@ import urllib
 # Dashboards modules
 import dash_bootstrap_components as dbc
 import pandas as pd
+import webbrowser
 
 # for post
 import requests
@@ -24,14 +25,7 @@ from dotenv import load_dotenv
 from app import app
 
 
-# computed stats
-datapath = os.path.join(os.getcwd(), "resources", "dbs")
 
-df = pd.read_sql_table(
-    "UserStats",
-    "sqlite:///" + os.path.join(datapath, "computed_stats.db"),
-    index_col="index",
-)
 
 load_dotenv()
 
@@ -81,36 +75,23 @@ layout = html.Form(
                     "padding": "20px",
                 },
                 children=[
-                    html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
+                    html.P("Share Your Statistics:", style={"paddingBottom": "2em"}),
                     html.Div(
                         [
                             html.A(
-                                [
+                                id="tw-link",
+                                children=[
                                     html.Img(
                                         src=app.get_asset_url("twitter.png"),
                                         style={
                                             "height": "140px",
                                             "width": "140px",
                                             "padding": "10px",
+                                            "cursor": "pointer"
                                         },
                                     ),
                                 ],
-                                href="https://twitter.com/intent/tweet?text="
-                                + urllib.parse.quote(
-                                    (
-                                        df["time_left"].values[0]
-                                        + "\n\n"
-                                        + df["life_spent"].values[0]
-                                        + "\n\n"
-                                        + df["life_compare"].values[0]
-                                        + "\n\n"
-                                        + df["school"].values[0]
-                                        + "\n\n"
-                                        + df["co2_stats"].values[0]
-                                    )[:276]
-                                    + " ...",
-                                    safe="/",
-                                ),
+                                
                             ),
                             html.Img(
                                 src=app.get_asset_url("instagram.jpg"),
@@ -159,14 +140,15 @@ layout = html.Form(
                     },
                     id="submit-button-state",
                     n_clicks=0,
-                    children="Submit",
+                    children="Restart",
                     color="Primary",
                     className="me-1",
-                    href="/page1",
+                    href="/page0",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
-            html.Div(id="output-submit-social"),
+            html.Div(id="output-submit-social", style={"textAlign":"center"}),
+            html.Div(id="output-submit-social-tw", style={"textAlign":"center"}),
         ],
     )
 )
@@ -189,44 +171,47 @@ def post_to_mastodon(toot, tags):
 
     return retdata
 
+def no_data(): 
+    return "There is no user data to post. Please click on \"Restart\"."
 
 @app.callback(
     Output(component_id="output-submit-social", component_property="children"),
     [
         Input(component_id="a-link", component_property="n_clicks"),
+        Input("dccstore_summary", "data"),
     ],
 )
-def mastodon(n_clicks):
-    df = pd.read_sql_table(
-        "UserStats",
-        "sqlite:///" + os.path.join(datapath, "computed_stats.db"),
-        index_col="index",
-    )
+def mastodon(n_clicks, summary):
+    if n_clicks == 0 or n_clicks is None:
+        raise PreventUpdate
+    
+    if summary is None:
+        return no_data()
+
+    # app.loggin.info("========")
+    # app.loggin.info(type(summary))
+
+    # app.loggin.info("========")
 
     toot = (
-        df["time_left"].values[0]
+        summary["time_left"]
         + "\n\n"
-        + df["life_spent"].values[0]
+        + summary["life_spent"]
         + "\n\n"
-        + df["life_compare"].values[0]
+        + summary["life_compare"]
         + "\n\n"
-        + df["school"].values[0]
+        + summary["school"]
         + "\n\n"
-        + df["co2_stats"].values[0]
+        + summary["co2_stats"]
         + "\n\n"
     )
 
-    poverty = str(df["poverty"].values[0])
+    poverty = str(summary["poverty"])
 
     if len(toot + poverty) < 500:
         toot += poverty
 
-        # + df["poverty"].values[0]
-        # Toots are limited to 500 chars. the last statistic would make it
-        # go over this limit and we still need a safety margin.
-        # + "\n"
-        # + df["suic"]
-        # + "\n"
+ 
 
     if len(toot + poverty) < 477: # all URLS are 23 chars long, all
         toot += "https://datavizmultlab.herokuapp.com"
@@ -238,7 +223,7 @@ def mastodon(n_clicks):
 
     tags = "\n\n#multimedia\n#databiz"
 
-    if n_clicks is None:
+    if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
     else:
         #pass
@@ -247,3 +232,40 @@ def mastodon(n_clicks):
 
     return None
 
+
+@app.callback(
+    Output(component_id="output-submit-social-tw", component_property="children"),
+    #Output("twitterLink","href"),
+    [
+        Input(component_id="tw-link", component_property="n_clicks"),
+        Input("dccstore_summary", "data"),
+    ],
+)
+def tweet(n_clicks, summary):
+    if n_clicks == 0 or n_clicks is None :
+        raise PreventUpdate
+
+    if summary is None:
+        return no_data()
+    
+    url = "https://twitter.com/intent/tweet?text=" + urllib.parse.quote(
+            (
+                summary["time_left"]
+                + "\n\n"
+                + summary["life_spent"]
+                + "\n\n"
+                + summary["life_compare"]
+                + "\n\n"
+                + summary["school"]
+                + "\n\n"
+                + summary["co2_stats"]
+            )[:276]
+            + " ...",
+            safe="/",
+            )
+
+    if n_clicks is None or n_clicks == 0:
+        raise PreventUpdate
+    else:
+        webbrowser.open(url,new=2, autoraise=True)
+        return "";

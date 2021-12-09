@@ -16,9 +16,12 @@ server = app.server
 app.layout = html.Div(
     children=[
         dcc.Location(id="url", refresh=False),
-        html.Div(id="page-content"),
+        html.Div(id="page-content"),        
+        dcc.Store(id='dccstore_summary'),
+        dcc.Store(id='dccstore_user'),
     ]
 )
+server = app.server
 
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
@@ -48,13 +51,14 @@ def display_page(pathname):
     # page 1
 
 
+
 if __name__ == "__main__":
     # app.run_server(debug=True)
     app.run_server(
         host="127.0.0.1",
         port="8050",
         #proxy=None,
-        debug=False,
+        debug=True,
         #dev_tools_props_check=None,
         #dev_tools_serve_dev_bundles=None,
         #dev_tools_hot_reload=None,
