@@ -40,7 +40,9 @@ df.sort_values(by=["Year"], inplace=True)
 # leading to nulls everywhere except the last 15 years or so for most cols
 df = df[df["Year"] >= 2000]
 
+
 countries = list(df.index.unique())
+countries.sort()
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
@@ -177,6 +179,7 @@ layout = html.Form(
                 ],
             ),
             html.Br(),
+            html.Div(id="my-output", style={"color":"red", "textAlign":"center"}),
             html.Div(
                 dbc.Button(
                     id="submit-button-state",
@@ -191,11 +194,10 @@ layout = html.Form(
                     children="Submit",
                     color="Primary",
                     className="me-1",
-                    href="/page1",
+                    href="/page1"
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
-            html.Div(id="my-output"),
             html.Div(id="output_graph"),
             html.Div(id="output_text", style={"textAlign": "center", "color": "blue"}),
         ],
@@ -208,14 +210,14 @@ layout = html.Form(
 def update_options_b(search_value):
     if not search_value:
         raise PreventUpdate
-    return [o for o in country_options if search_value in o["label"]]
+    return [o for o in country_options if search_value.lower() in o["label"].lower()]
 
 
 @app.callback(Output("residence", "options"), Input("residence", "search_value"))
 def update_options_r(search_value):
     if not search_value:
         raise PreventUpdate
-    return [o for o in country_options if search_value in o["label"]]
+    return [o for o in country_options if search_value.lower() in o["label"].lower()]
 
 
 # every selection change will update our dccstore.
@@ -258,3 +260,18 @@ def sel_user_data(
     user_data_local[7] = smoker
     app.logger.info(user_data_local)
     return user_data_local
+
+# @app.callback(
+#     Output(component_id="my-output", component_property="children"),
+#     [
+#         Input(component_id="submit-button-state", component_property="n_clicks"),
+#     ],
+# )
+# def submit_user_details(n_clicks):
+#     # if n_clicks == 0:
+#     #     raise PreventUpdate
+
+#     if '' in user_data_local:
+#         return "Please make sure all fields have been keyed in."
+#     else:
+#         return dcc.Location(pathname="/page5", id="my-output")
