@@ -218,8 +218,6 @@ def mastodon(n_clicks):
 
     poverty = str(df["poverty"].values[0])
 
-    app.logger.info("Toot lenght (500 chars max) = {}".format(len(toot + poverty)))
-
     if len(toot + poverty) < 500:
         toot += poverty
 
@@ -233,6 +231,9 @@ def mastodon(n_clicks):
     if len(toot + poverty) < 477: # all URLS are 23 chars long, all
         toot += "https://datavizmultlab.herokuapp.com"
 
+
+    app.logger.info(toot)
+
     # app.logger.info(toot)
 
     tags = "\n\n#multimedia\n#databiz"
@@ -240,6 +241,7 @@ def mastodon(n_clicks):
     if n_clicks is None:
         raise PreventUpdate
     else:
+        #pass
         status_code = post_to_mastodon(toot, tags)
         app.logger.info("Tried posting, code = {}".format(status_code))
 
