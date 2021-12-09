@@ -5,16 +5,14 @@ Created on Sat Dec  4 22:17:25 2021
 
 @author: cgwork
 """
-import logging
 import os
 
-import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
 from app import app

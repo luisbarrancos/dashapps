@@ -16,15 +16,10 @@ import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
-# from sqlalchemy import create_engine
 
 from app import app
 
-# custom classes
-# from UserData import UserData
-
-#defining a global user_data variable for passing user data from 1 dash page to another 
-user_data_local = ['']*8
+user_data_local = [""] * 8
 
 # All the code for data filtering, processing, done in jupyterlab
 # notebooks (already in github), but now we can bypass all the processing
@@ -223,14 +218,11 @@ def update_options_r(search_value):
     return [o for o in country_options if search_value in o["label"]]
 
 
-
-
-    
-
-# every selection change will update our dccstore. 
+# every selection change will update our dccstore.
 # @todo@ right now some fields can be optional.
-@app.callback(Output("dccstore_user", "data"),
-   [
+@app.callback(
+    Output("dccstore_user", "data"),
+    [
         Input(component_id="user_name", component_property="value"),
         Input(component_id="user_age", component_property="value"),
         Input(component_id="birthplace", component_property="value"),
@@ -241,8 +233,9 @@ def update_options_r(search_value):
         Input(component_id="smoker", component_property="value"),
     ],
 )
-def sel_user_data( user_name, user_age, birthplace, residence,
-                    sex, veggie, driver, smoker):
+def sel_user_data(
+    user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
+):
 
     if (
         user_name is None
@@ -265,6 +258,3 @@ def sel_user_data( user_name, user_age, birthplace, residence,
     user_data_local[7] = smoker
     app.logger.info(user_data_local)
     return user_data_local
-
-
-

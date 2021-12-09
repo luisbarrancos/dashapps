@@ -9,11 +9,10 @@ Created on Sat Dec  4 11:12:43 2021
 # Dataframes, DBs
 import os
 import urllib
+import webbrowser
 
 # Dashboards modules
 import dash_bootstrap_components as dbc
-import pandas as pd
-import webbrowser
 
 # for post
 import requests
@@ -23,9 +22,6 @@ from dash.exceptions import PreventUpdate
 from dotenv import load_dotenv
 
 from app import app
-
-
-
 
 load_dotenv()
 
@@ -40,17 +36,6 @@ dropdown_style = {
     "color": "#ffffff",
     "backgroundColor": "#000000",
 }
-
-
-### Buttons
-# buttons = html.Div(
-#    [
-#        dbc.Button("Regular", color="primary", className="me-1"),
-#        dbc.Button("Active", color="primary", active=True, className="me-1"),
-#        dbc.Button("Disabled", color="primary", disabled=True),
-#    ]
-# )
-
 
 # layout
 layout = html.Form(
@@ -87,11 +72,10 @@ layout = html.Form(
                                             "height": "140px",
                                             "width": "140px",
                                             "padding": "10px",
-                                            "cursor": "pointer"
+                                            "cursor": "pointer",
                                         },
                                     ),
                                 ],
-                                
                             ),
                             html.Img(
                                 src=app.get_asset_url("instagram.jpg"),
@@ -147,8 +131,8 @@ layout = html.Form(
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
-            html.Div(id="output-submit-social", style={"textAlign":"center"}),
-            html.Div(id="output-submit-social-tw", style={"textAlign":"center"}),
+            html.Div(id="output-submit-social", style={"textAlign": "center"}),
+            html.Div(id="output-submit-social-tw", style={"textAlign": "center"}),
         ],
     )
 )
@@ -171,8 +155,10 @@ def post_to_mastodon(toot, tags):
 
     return retdata
 
-def no_data(): 
-    return "There is no user data to post. Please click on \"Restart\"."
+
+def no_data():
+    return 'There is no user data to post. Please click on "Restart".'
+
 
 @app.callback(
     Output(component_id="output-submit-social", component_property="children"),
@@ -184,7 +170,7 @@ def no_data():
 def mastodon(n_clicks, summary):
     if n_clicks == 0 or n_clicks is None:
         raise PreventUpdate
-    
+
     if summary is None:
         return no_data()
 
@@ -211,11 +197,8 @@ def mastodon(n_clicks, summary):
     if len(toot + poverty) < 500:
         toot += poverty
 
- 
-
-    if len(toot + poverty) < 477: # all URLS are 23 chars long, all
+    if len(toot + poverty) < 477:  # all URLS are 23 chars long, all
         toot += "https://datavizmultlab.herokuapp.com"
-
 
     app.logger.info(toot)
 
@@ -225,47 +208,47 @@ def mastodon(n_clicks, summary):
 
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
-    else:
-        #pass
-        status_code = post_to_mastodon(toot, tags)
-        app.logger.info("Tried posting, code = {}".format(status_code))
+
+    # pass
+    status_code = post_to_mastodon(toot, tags)
+    app.logger.info("Tried posting, code = {}".format(status_code))
 
     return None
 
 
 @app.callback(
     Output(component_id="output-submit-social-tw", component_property="children"),
-    #Output("twitterLink","href"),
+    # Output("twitterLink","href"),
     [
         Input(component_id="tw-link", component_property="n_clicks"),
         Input("dccstore_summary", "data"),
     ],
 )
 def tweet(n_clicks, summary):
-    if n_clicks == 0 or n_clicks is None :
+    if n_clicks == 0 or n_clicks is None:
         raise PreventUpdate
 
     if summary is None:
         return no_data()
-    
+
     url = "https://twitter.com/intent/tweet?text=" + urllib.parse.quote(
-            (
-                summary["time_left"]
-                + "\n\n"
-                + summary["life_spent"]
-                + "\n\n"
-                + summary["life_compare"]
-                + "\n\n"
-                + summary["school"]
-                + "\n\n"
-                + summary["co2_stats"]
-            )[:276]
-            + " ...",
-            safe="/",
-            )
+        (
+            summary["time_left"]
+            + "\n\n"
+            + summary["life_spent"]
+            + "\n\n"
+            + summary["life_compare"]
+            + "\n\n"
+            + summary["school"]
+            + "\n\n"
+            + summary["co2_stats"]
+        )[:276]
+        + " ...",
+        safe="/",
+    )
 
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
-    else:
-        webbrowser.open(url,new=2, autoraise=True)
-        return "";
+
+    webbrowser.open(url, new=2, autoraise=True)
+    return ""

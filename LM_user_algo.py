@@ -15,7 +15,7 @@ from random import random
 # Dashboards modules
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import dcc, html
+from dash import html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from sqlalchemy import create_engine
@@ -45,15 +45,14 @@ countries = list(df1.index.unique())
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 
-
 summary = {
-    "time_left" : "",
-    "life_spent" : "",
-    "life_compare" : "",
-    "school" : "",
-    "co2_stats" : "",
-    "poverty" : "",
-    "suic" : "",
+    "time_left": "",
+    "life_spent": "",
+    "life_compare": "",
+    "school": "",
+    "co2_stats": "",
+    "poverty": "",
+    "suic": "",
 }
 
 # country dropdowns require list of unique names
@@ -216,22 +215,23 @@ def generate_stats(dfc, dfu):
 def start_countdown(target_date):
     countdown = target_date - datetime.now()
 
-def summarize_data(user_data_local): 
+
+def summarize_data(user_data_local):
     app.logger.info("========user_data_local=====")
     app.logger.info(user_data_local)
     app.logger.info("===========================")
-    df2 = pd.DataFrame({
-        "name": [user_data_local[0]],
-        "age": [user_data_local[1]],
-        "birthplace": [user_data_local[2]],
-        "residence": [user_data_local[3]],
-        "sex": [user_data_local[4]],
-        "veggie": [user_data_local[5]],
-        "driver": [user_data_local[6]],
-        "smoker": [user_data_local[7]],
-    },)
-
-
+    df2 = pd.DataFrame(
+        {
+            "name": [user_data_local[0]],
+            "age": [user_data_local[1]],
+            "birthplace": [user_data_local[2]],
+            "residence": [user_data_local[3]],
+            "sex": [user_data_local[4]],
+            "veggie": [user_data_local[5]],
+            "driver": [user_data_local[6]],
+            "smoker": [user_data_local[7]],
+        },
+    )
 
     data = generate_stats(df1, df2)
 
@@ -268,13 +268,11 @@ def summarize_data(user_data_local):
         )
     )
 
-
     school = "{} years, {} months, {} days were " " (well) spent in school".format(
         data["avg_schooling_years"].year,
         data["avg_schooling_years"].month,
         data["avg_schooling_years"].day,
     )
-
 
     co2_stats = (
         "{} last CO2 fingerprint was {:.3f} tons and"
@@ -312,7 +310,7 @@ def summarize_data(user_data_local):
         "poverty": poverty,
         "suic": suic,
     }
-    #df = pd.DataFrame.from_dict(strdata, orient="columns")
+    # df = pd.DataFrame.from_dict(strdata, orient="columns")
 
     # summary = {
     #     "time_left" : "",
@@ -325,7 +323,6 @@ def summarize_data(user_data_local):
     # }
 
     return strdata
-    
 
 
 layout = html.Form(
@@ -386,13 +383,11 @@ layout = html.Form(
                     href="/page6",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
-                id="div_submit"
+                id="div_submit",
             ),
             html.Div(
                 id="div_restart",
-                children=[
-
-                ],
+                children=[],
             ),
             html.Div(id="output-user-algo"),
         ],
@@ -402,20 +397,19 @@ layout = html.Form(
 
 @app.callback(
     Output("dccstore_summary", "data"),
-    [
-        Input("dccstore_user","data")
-    ],
+    [Input("dccstore_user", "data")],
 )
 def trigger_stats_generation(user_data):
     if user_data is None:
-       raise PreventUpdate
+        raise PreventUpdate
 
-    #app.logger.info("summarizing1 ... ")
+    # app.logger.info("summarizing1 ... ")
     data = summarize_data(user_data)
-    #app.logger.info(data)
-    #app.logger.info("--end1--- ... ")
+    # app.logger.info(data)
+    # app.logger.info("--end1--- ... ")
 
     return data
+
 
 @app.callback(
     Output(component_id="output-time-left", component_property="children"),
@@ -426,50 +420,67 @@ def trigger_stats_generation(user_data):
     Output(component_id="output-poverty", component_property="children"),
     Output(component_id="output-suicides", component_property="children"),
     Output(component_id="div_submit", component_property="children"),
-    [
-        Input("dccstore_summary","data"),
-        Input('url', 'pathname')
-    ],
+    [Input("dccstore_summary", "data"), Input("url", "pathname")],
 )
-def update_display_summary(summary,urlpath):
+def update_display_summary(summary, urlpath):
     app.logger.info(urlpath)
     # dynamically add restart/submit  based on whether data exists
-    restart =  dbc.Button(
-                style={
-                    "fontSize": 22,
-                    "marginLeft": "20px",
-                    "marginRight": "80px",
-                    "backgroundColor": "#111",
-                    "color": "#ffffff",
-                },
-                id="submit-button-state",
-                n_clicks=0,
-                children="Restart",
-                color="Primary",
-                className="me-1",
-                href="/page0",
-                ),
-    submit =  dbc.Button(
-                style={
-                    "fontSize": 22,
-                    "marginLeft": "20px",
-                    "marginRight": "80px",
-                    "backgroundColor": "#111",
-                    "color": "#ffffff",
-                },
-                id="submit-button-state",
-                n_clicks=0,
-                children="Submit",
-                color="Primary",
-                className="me-1",
-                href="/page6",
-                ),
+    restart = (
+        dbc.Button(
+            style={
+                "fontSize": 22,
+                "marginLeft": "20px",
+                "marginRight": "80px",
+                "backgroundColor": "#111",
+                "color": "#ffffff",
+            },
+            id="submit-button-state",
+            n_clicks=0,
+            children="Restart",
+            color="Primary",
+            className="me-1",
+            href="/page0",
+        ),
+    )
+    submit = (
+        dbc.Button(
+            style={
+                "fontSize": 22,
+                "marginLeft": "20px",
+                "marginRight": "80px",
+                "backgroundColor": "#111",
+                "color": "#ffffff",
+            },
+            id="submit-button-state",
+            n_clicks=0,
+            children="Submit",
+            color="Primary",
+            className="me-1",
+            href="/page6",
+        ),
+    )
     if summary is None:
         if urlpath == "/page5":
-            return "There is no user data. Please restart.", "", "", "", "", "", "", restart
+            return (
+                "There is no user data. Please restart.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                restart,
+            )
         else:
             raise PreventUpdate
 
-    return summary["time_left"], summary["life_spent"],summary["life_compare"],summary["school"],summary["co2_stats"], summary["poverty"], summary["suic"], submit
-
-
+    return (
+        summary["time_left"],
+        summary["life_spent"],
+        summary["life_compare"],
+        summary["school"],
+        summary["co2_stats"],
+        summary["poverty"],
+        summary["suic"],
+        submit,
+    )
