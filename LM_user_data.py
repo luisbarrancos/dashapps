@@ -16,12 +16,15 @@ import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
 from app import app
 
 # custom classes
-from UserData import UserData
+# from UserData import UserData
+
+#defining a global user_data variable for passing user data from 1 dash page to another 
+user_data_local = ['']*8
 
 # All the code for data filtering, processing, done in jupyterlab
 # notebooks (already in github), but now we can bypass all the processing
@@ -223,6 +226,39 @@ def update_options_r(search_value):
 @app.callback(
     Output(component_id="my-output", component_property="children"),
     [
+        Input(component_id="submit-button-state", component_property="n_clicks"),
+    ],
+)
+def submit_user_details(n_clicks):
+    if (n_clicks is 0):
+        raise PreventUpdate
+
+    return ""
+    # for perfect application, each user data will have a row in the database
+    # which they can retrieve and share out on twitter/mastodon for other people to see.
+ 
+    # userdata_ = UserData(
+    #     user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
+    # )
+
+    # # for now, create a dataframe from user data/dictionary and write to
+    # # a sql DB, then load it.
+    # df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
+    # # app.logger.info(df)
+
+    # sqldb = os.path.join(datapath, "userdata.db")
+    # engine = create_engine("sqlite:///" + sqldb, echo=False)
+    # conn = engine.connect()
+
+    # df.to_sql("UserData", conn, if_exists="replace")
+    # conn.close()
+
+    
+
+# every selection change will update our dccstore. 
+# @todo@ right now some fields can be optional.
+@app.callback(Output("dccstore_user", "data"),
+   [
         Input(component_id="user_name", component_property="value"),
         Input(component_id="user_age", component_property="value"),
         Input(component_id="birthplace", component_property="value"),
@@ -231,12 +267,11 @@ def update_options_r(search_value):
         Input(component_id="veggie", component_property="value"),
         Input(component_id="driver", component_property="value"),
         Input(component_id="smoker", component_property="value"),
-        Input(component_id="submit-button-state", component_property="n_clicks"),
     ],
 )
-def update_output_div(
-    user_name, user_age, birthplace, residence, sex, veggie, driver, smoker, n_clicks
-):
+def sel_user_data( user_name, user_age, birthplace, residence,
+                    sex, veggie, driver, smoker):
+
     if (
         user_name is None
         or user_age is None
@@ -246,22 +281,18 @@ def update_output_div(
         or veggie is None
         or driver is None
         or smoker is None
-        or n_clicks is None
     ):
         raise PreventUpdate
+    user_data_local[0] = user_name
+    user_data_local[1] = user_age
+    user_data_local[2] = birthplace
+    user_data_local[3] = residence
+    user_data_local[4] = sex
+    user_data_local[5] = veggie
+    user_data_local[6] = driver
+    user_data_local[7] = smoker
+    app.logger.info(user_data_local)
+    return user_data_local
 
-    userdata_ = UserData(
-        user_name, user_age, birthplace, residence, sex, veggie, driver, smoker
-    )
 
-    # for now, create a dataframe from user data/dictionary and write to
-    # a sql DB, then load it.
-    df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
-    # app.logger.info(df)
 
-    sqldb = os.path.join(datapath, "userdata.db")
-    engine = create_engine("sqlite:///" + sqldb, echo=False)
-    conn = engine.connect()
-
-    df.to_sql("UserData", conn, if_exists="replace")
-    conn.close()

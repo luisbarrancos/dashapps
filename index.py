@@ -15,9 +15,10 @@ app.layout = html.Div(
     children=[
         dcc.Location(id="url", refresh=False),
         html.Div(id="page-content"),
+        dcc.Store(id='dccstore_summary'),
+        dcc.Store(id='dccstore_user'),
     ]
 )
-
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
