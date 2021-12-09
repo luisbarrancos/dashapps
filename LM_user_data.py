@@ -50,30 +50,30 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
 dropdown_style = {
-    "margin-left": "20px",
-    "margin-right": "50px",
+    "marginLeft": "20px",
+    "marginRight": "50px",
     "color": "#ffffff",
-    "background-color": "#000000",
+    "backgroundColor": "#000000",
 }
 
 # layout
 layout = html.Form(
     html.Div(
         style={
-            "font-family": "Sawasdee",
-            "font-size": 22,
+            "fontFamily": "Sawasdee",
+            "fontSize": 22,
             "color": "#ffffff",
-            "background-color": "#111111",
+            "backgroundColor": "#111111",
         },
         children=[
-            html.H1(style={"text-align": "left"}, children=""),
+            html.H1(style={"textAlign": "left"}, children=""),
             # header
             html.Br(),
             html.P(
                 style={
-                    "text-align": "left",
-                    "font-size": 32,
-                    "margin-left": "20px",
+                    "textAlign": "left",
+                    "fontSize": 32,
+                    "marginLeft": "20px",
                 },
                 children="Please fill-in the data:",
             ),
@@ -83,7 +83,7 @@ layout = html.Form(
                 style={
                     "margin": "0 auto",
                     "width": "50%",
-                    #    #"background-color": "#99d6ff",
+                    #    #"backgroundColor": "#99d6ff",
                     "padding": "15px",
                 },
                 # child of input area frame | input fields
@@ -91,10 +91,10 @@ layout = html.Form(
                     dcc.Input(
                         id="user_name",
                         style={
-                            "font-size": 22,
-                            # "margin-left": "20px",
-                            "margin-right": "50px",
-                            #    "background-color" : "#000000",
+                            "fontSize": 22,
+                            # "marginLeft": "20px",
+                            "marginRight": "50px",
+                            #    "backgroundColor" : "#000000",
                             #    "color" : "#ffffff"
                         },
                         value=None,
@@ -108,10 +108,10 @@ layout = html.Form(
                     dcc.Input(
                         id="user_age",
                         style={
-                            "font-size": 22,
-                            # "margin-left": "20px",
-                            "margin-right": "50px",
-                            #    "background-color" : "#000000",
+                            "fontSize": 22,
+                            # "marginLeft": "20px",
+                            "marginRight": "50px",
+                            #    "backgroundColor" : "#000000",
                             #    "color" : "#ffffff"
                         },
                         type="number",
@@ -186,10 +186,10 @@ layout = html.Form(
                 dbc.Button(
                     id="submit-button-state",
                     style={
-                        "font-size": 22,
-                        "margin-left": "20px",
-                        "margin-right": "80px",
-                        "background-color": "#111",
+                        "fontSize": 22,
+                        "marginLeft": "20px",
+                        "marginRight": "80px",
+                        "backgroundColor": "#111",
                         "color": "#ffffff",
                     },
                     n_clicks=0,
@@ -202,7 +202,7 @@ layout = html.Form(
             ),
             html.Div(id="my-output"),
             html.Div(id="output_graph"),
-            html.Div(id="output_text", style={"text-align": "center", "color": "blue"}),
+            html.Div(id="output_text", style={"textAlign": "center", "color": "blue"}),
         ],
     )
 )
@@ -223,17 +223,6 @@ def update_options_r(search_value):
     return [o for o in country_options if search_value in o["label"]]
 
 
-@app.callback(
-    Output(component_id="my-output", component_property="children"),
-    [
-        Input(component_id="submit-button-state", component_property="n_clicks"),
-    ],
-)
-def submit_user_details(n_clicks):
-    if (n_clicks is 0):
-        raise PreventUpdate
-
-    return ""
 
 
     

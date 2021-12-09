@@ -93,7 +93,7 @@ data_picker = dcc.Dropdown(
     value=list(fields.keys())[0],
     placeholder="Year",
     style={
-        "font-size": 14,
+        "fontSize": 14,
         # "width" : "70%",
         "horizontalAlign": "middle",
         "verticalAlign": "middle",
@@ -115,10 +115,10 @@ year_slider = dcc.RangeSlider(
 
 button = dbc.Button(
     style={
-        "font-size": 18,
-        "margin-left": "20px",
-        "margin-right": "80px",
-        "background-color": "#111",
+        "fontSize": 18,
+        "marginLeft": "20px",
+        "marginRight": "80px",
+        "backgroundColor": "#111",
         "color": "#ffffff",
     },
     id="next-button-state",
@@ -133,9 +133,9 @@ button = dbc.Button(
 # Create the app layout
 layout = html.Div(
     style={
-        "font-family": "Sawasdee",
-        "font-size": 22,
-        "background-color": "#111111",
+        "fontFamily": "Sawasdee",
+        "fontSize": 22,
+        "backgroundColor": "#111111",
     },
     children=[
         html.Div(

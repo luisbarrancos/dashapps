@@ -62,10 +62,10 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # app.logger.info(country_options)
 dropdown_style = {
-    "margin-left": "20px",
-    "margin-right": "50px",
+    "marginLeft": "20px",
+    "marginRight": "50px",
     "color": "#ffffff",
-    "background-color": "#000000",
+    "backgroundColor": "#000000",
 }
 
 
@@ -331,31 +331,31 @@ def summarize_data(user_data_local):
 layout = html.Form(
     html.Div(
         style={
-            "font-family": "Sawasdee",
-            "font-size": 22,
+            "fontFamily": "Sawasdee",
+            "fontSize": 22,
             "color": "#ffffff",
-            "background-color": "#111111",
+            "backgroundColor": "#111111",
         },
         children=[
             html.Br(),
-            html.H1(style={"text-align": "left"}, children=""),
+            html.H1(style={"textAlign": "left"}, children=""),
             # header
             html.Br(),
             html.P(
                 style={
-                    "text-align": "left",
-                    "font-size": 32,
-                    "margin-left": "20px",
+                    "textAlign": "left",
+                    "fontSize": 32,
+                    "marginLeft": "20px",
                 },
                 children="Available data shows that",
             ),
             html.Div(
                 id="output-textbox-div",
                 style={
-                    "font-family": "Sawasdee",
-                    "font-size": 18,
+                    "fontFamily": "Sawasdee",
+                    "fontSize": 18,
                     "color": "#ffffff",
-                    "background-color": "#111111",
+                    "backgroundColor": "#111111",
                     "padding": "5%",
                 },
                 children=[
@@ -372,10 +372,10 @@ layout = html.Form(
             html.Div(
                 dbc.Button(
                     style={
-                        "font-size": 22,
-                        "margin-left": "20px",
-                        "margin-right": "80px",
-                        "background-color": "#111",
+                        "fontSize": 22,
+                        "marginLeft": "20px",
+                        "marginRight": "80px",
+                        "backgroundColor": "#111",
                         "color": "#ffffff",
                     },
                     id="submit-button-state",
@@ -436,10 +436,10 @@ def update_display_summary(summary,urlpath):
     # dynamically add restart/submit  based on whether data exists
     restart =  dbc.Button(
                 style={
-                    "font-size": 22,
-                    "margin-left": "20px",
-                    "margin-right": "80px",
-                    "background-color": "#111",
+                    "fontSize": 22,
+                    "marginLeft": "20px",
+                    "marginRight": "80px",
+                    "backgroundColor": "#111",
                     "color": "#ffffff",
                 },
                 id="submit-button-state",
@@ -451,10 +451,10 @@ def update_display_summary(summary,urlpath):
                 ),
     submit =  dbc.Button(
                 style={
-                    "font-size": 22,
-                    "margin-left": "20px",
-                    "margin-right": "80px",
-                    "background-color": "#111",
+                    "fontSize": 22,
+                    "marginLeft": "20px",
+                    "marginRight": "80px",
+                    "backgroundColor": "#111",
                     "color": "#ffffff",
                 },
                 id="submit-button-state",

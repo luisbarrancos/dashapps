@@ -35,10 +35,10 @@ MASTODON_TOKEN = os.environ.get("MASTODON_TOKEN")
 
 # app.logger.info(country_options)
 dropdown_style = {
-    "margin-left": "20px",
-    "margin-right": "50px",
+    "marginLeft": "20px",
+    "marginRight": "50px",
     "color": "#ffffff",
-    "background-color": "#000000",
+    "backgroundColor": "#000000",
 }
 
 
@@ -56,20 +56,20 @@ dropdown_style = {
 layout = html.Form(
     html.Div(
         style={
-            "font-family": "Sawasdee",
-            "font-size": 22,
+            "fontFamily": "Sawasdee",
+            "fontSize": 22,
             "color": "#ffffff",
-            "background-color": "#111111",
+            "backgroundColor": "#111111",
         },
         children=[
             html.Br(),
-            html.H1(style={"text-align": "left"}, children=""),
+            html.H1(style={"textAlign": "left"}, children=""),
             # header
             html.Br(),
             html.Div(
                 style={
-                    "text-align": "left",
-                    "font-size": 32,
+                    "textAlign": "left",
+                    "fontSize": 32,
                     "margin": "auto",
                     "width": "50%",
                     "padding": "20px",
@@ -132,10 +132,10 @@ layout = html.Form(
             html.Div(
                 dbc.Button(
                     style={
-                        "font-size": 22,
-                        "margin-left": "20px",
-                        "margin-right": "80px",
-                        "background-color": "#111",
+                        "fontSize": 22,
+                        "marginLeft": "20px",
+                        "marginRight": "80px",
+                        "backgroundColor": "#111",
                         "color": "#ffffff",
                     },
                     id="submit-button-state",

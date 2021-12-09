@@ -72,7 +72,7 @@ dropdown = dcc.Dropdown(
     value=tuple(),
     placeholder="Countries",
     style={
-        "font-size": 14,
+        "fontSize": 14,
         # "width" : "70%",
         "horizontalAlign": "middle",
         "verticalAlign": "middle",
@@ -86,10 +86,10 @@ graph1 = dcc.Graph(
 
 button = dbc.Button(
     style={
-        "font-size": 18,
-        "margin-left": "20px",
-        "margin-right": "80px",
-        "background-color": "#111",
+        "fontSize": 18,
+        "marginLeft": "20px",
+        "marginRight": "80px",
+        "backgroundColor": "#111",
         "color": "#ffffff",
     },
     id="next-button-state",
@@ -128,9 +128,9 @@ scatter_layout = go.Layout(
 
 layout = html.Div(
     style={
-        "font-family": "Sawasdee",
-        "font-size": 22,
-        "background-color": "#111111",
+        "fontFamily": "Sawasdee",
+        "fontSize": 22,
+        "backgroundColor": "#111111",
     },
     children=[
         html.Div(
