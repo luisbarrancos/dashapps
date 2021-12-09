@@ -258,7 +258,7 @@ def sel_user_data(
     user_data_local[5] = veggie
     user_data_local[6] = driver
     user_data_local[7] = smoker
-    app.logger.info(user_data_local)
+    # app.logger.info(user_data_local)
     return user_data_local
 
 # @app.callback(
