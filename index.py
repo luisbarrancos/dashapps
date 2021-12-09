@@ -11,6 +11,8 @@ import LM_user_algo
 import LM_user_data
 from app import app
 
+server = app.server
+
 app.layout = html.Div(
     children=[
         dcc.Location(id="url", refresh=False),
