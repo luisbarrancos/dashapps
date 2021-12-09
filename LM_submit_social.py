@@ -9,51 +9,35 @@ Created on Sat Dec  4 11:12:43 2021
 # Dataframes, DBs
 import os
 import urllib
-from datetime import datetime, timedelta
-from random import random
 
 # Dashboards modules
-import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 
 # for post
 import requests
-from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash import html
+from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
 
 from app import app
 
-# custom classes
-from UserData import UserData
 
 # computed stats
+datapath = os.path.join(os.getcwd(), "resources", "dbs")
+
 df = pd.read_sql_table(
     "UserStats",
-    "sqlite:///" + os.path.join(os.getcwd(), "assets", "computed_stats.sql"),
+    "sqlite:///" + os.path.join(datapath, "computed_stats.db"),
     index_col="index",
 )
 
 load_dotenv()
 
+# Tokens
 MASTODON_TOKEN = os.environ.get("MASTODON_TOKEN")
 
-# =============================================================================
-#
-# external_stylesheets = [dbc.themes.DARKLY]
-#
-# app = dash.Dash(
-#     __name__,
-#     external_stylesheets=external_stylesheets,
-#     # assets_url_path=os.path.join(os.getcwd(), "assets",
-# )
-#
-# server = app.server
-#
-# =============================================================================
 
 # app.logger.info(country_options)
 dropdown_style = {
@@ -253,37 +237,3 @@ def mastodon(n_clicks):
 
     return None
 
-
-# @app.callback(
-#     Output(component_id="output-submit-social", component_property="children"),
-#     [
-#         Input(component_id="submit-button-state", component_property="n_clicks"),
-#     ],
-# )
-# def update_output_div(n_clicks):
-#     if n_clicks is None:
-#         raise PreventUpdate
-
-#     return ""
-
-# =============================================================================
-#
-# if __name__ == "__main__":
-#     # app.run_server(debug=True)
-#     app.run_server(
-#         host="127.0.0.1",
-#         port="8050",
-#         proxy=None,
-#         debug=True,
-#         # dev_tools_props_check=None,
-#         # dev_tools_serve_dev_bundles=None,
-#         # dev_tools_hot_reload=None,
-#         # dev_tools_hot_reload_interval=None,
-#         # dev_tools_hot_reload_watch_interval=None,
-#         # dev_tools_hot_reload_max_retry=None,
-#         # dev_tools_silence_routes_logging=None,
-#         # dev_tools_prune_errors=None,
-#         # **flask_run_options
-#     )
-#
-# =============================================================================

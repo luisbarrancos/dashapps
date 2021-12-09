@@ -32,8 +32,8 @@ datapath = os.path.join(os.getcwd(), "resources", "dbs")
 df = pd.read_sql_table(
     "Deadline_database",
     "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-    index_col = "Country"
-    )
+    index_col="Country",
+)
 
 # df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
@@ -259,7 +259,7 @@ def update_output_div(
     df = pd.DataFrame.from_dict(userdata_.get_dict(), orient="columns")
     # app.logger.info(df)
 
-    sqldb = os.path.join(os.getcwd(), "resources", "dbs", "userdata.sql")
+    sqldb = os.path.join(datapath, "userdata.db")
     engine = create_engine("sqlite:///" + sqldb, echo=False)
     conn = engine.connect()
 

@@ -6,23 +6,22 @@ Created on Sat Dec  4 22:17:25 2021
 @author: cgwork
 """
 
-from app import app
-
 import logging
 import os
+
+import dash
+import dash_bootstrap_components as dbc
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objs as go
+from dash import dcc, html
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
+
+from app import app
 
 # import numpy as np
 
-import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
-
-import plotly.express as px
-import plotly.graph_objs as go
 
 colorscales = px.colors.named_colorscales()
 
@@ -35,8 +34,8 @@ datapath = os.path.join(os.getcwd(), "resources", "dbs")
 df = pd.read_sql_table(
     "Deadline_database",
     "sqlite:///" + os.path.join(datapath, "deadline_database_nonans_geo.db"),
-    index_col = "Country"
-    )
+    index_col="Country",
+)
 
 # df.dropna(inplace=True)
 df.sort_values(by=["Year"], inplace=True)
@@ -51,15 +50,6 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 # Dash
 external_stylesheets = [dbc.themes.DARKLY]
-# =============================================================================
-# 
-# app = dash.Dash(
-#     __name__,
-#     external_stylesheets=external_stylesheets,
-#     assets_url_path=os.path.join(os.getcwd(), "assets"),
-# )
-# app.title = "Deadline"
-# =============================================================================
 
 
 # Year/range slider
@@ -89,10 +79,9 @@ dropdown = dcc.Dropdown(
     },
 )
 
-graph1 = dcc.Graph(id="life_exp_scatter",
-                   config={"displayModeBar" : True,
-                           "displaylogo" : False}
-                   )
+graph1 = dcc.Graph(
+    id="life_exp_scatter", config={"displayModeBar": True, "displaylogo": False}
+)
 
 
 button = dbc.Button(
@@ -108,7 +97,7 @@ button = dbc.Button(
     children="Next",
     color="Primary",
     className="me-1",
-    href="/page2"
+    href="/page2",
 )
 
 
@@ -161,7 +150,7 @@ layout = html.Div(
                 button,
             ],
             className="d-grip gap-2 d-md-flex justify-content-md-end",
-        ),        
+        ),
     ],
 )
 
@@ -172,15 +161,15 @@ layout = html.Div(
     # State("year-slider", "value"),
 )
 def color_countries_and_region(
-        country,
-        #years
-        ):
+    country,
+    # years
+):
     if country is None:
         raise PreventUpdate
 
     mask = (
-        (df.index.isin(country))
-        #& (df["Year"] >= years[0]) & (df["Year"] <= years[1])
+        df.index.isin(country)
+        # & (df["Year"] >= years[0]) & (df["Year"] <= years[1])
     )
 
     # logging.info(msg=locals())
@@ -198,25 +187,3 @@ def color_countries_and_region(
 
     line_fig.update_layout(scatter_layout)
     return line_fig
-
-
-# =============================================================================
-# if __name__ == "__main__":
-#     # app.run_server(debug=True)
-#     app.run_server(
-#         host="127.0.0.1",
-#         port="8050",
-#         proxy=None,
-#         debug=True,
-#         # dev_tools_props_check=None,
-#         # dev_tools_serve_dev_bundles=None,
-#         # dev_tools_hot_reload=None,
-#         # dev_tools_hot_reload_interval=None,
-#         # dev_tools_hot_reload_watch_interval=None,
-#         # dev_tools_hot_reload_max_retry=None,
-#         # dev_tools_silence_routes_logging=None,
-#         # dev_tools_prune_errors=None,
-#         # **flask_run_options
-#     )
-# 
-# =============================================================================

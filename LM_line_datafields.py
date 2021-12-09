@@ -222,7 +222,7 @@ def color_countries_and_region(country, years, datafield, n_clicks):
     )
 
     line_fig.update_layout(scatter_layout)
-    line_fig.update_layout(title = datafield.replace("_", " ").title())
-    line_fig.update_layout(yaxis_title = datafield.replace("_", " ").title())
+    line_fig.update_layout(title=datafield.replace("_", " ").title())
+    line_fig.update_layout(yaxis_title=datafield.replace("_", " ").title())
 
     return line_fig

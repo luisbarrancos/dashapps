@@ -6,37 +6,29 @@ Created on Sat Dec  4 11:12:43 2021
 @author: cgwork
 """
 
-from app import app
-
 # Dataframes, DBs
-import os
-import pandas as pd
-import numpy as np
 
 
 # Dashboards modules
-import dash
-from dash import dcc
+import os
+import dash_bootstrap_components as dbc
 from dash import html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
-import dash_bootstrap_components as dbc
-
-# custom classes
-from UserData import UserData
+from app import app
 
 # layout
 layout = html.Div(
-    children = [
+    children=[
         html.Video(
-            controls = False,
-            id = 'movie_player',
-            # src = "https://www.youtube.com/watch?v=gPtn6hD7o8g",
-            # src = "https://www.w3schools.com/html/mov_bbb.mp4",
-            src = "assets/mockup_video_final.mp4",
+            controls=False,
+            id="movie_player",
+            src=os.path.join(
+                os.getcwd(), "resources", "media", "mockup_video_final.mp4"
+            ),
             autoPlay=True,
-            width = 1200,
+            width=1200,
         ),
         html.Div(
             dbc.Button(
@@ -52,12 +44,14 @@ layout = html.Div(
                 children="Submit",
                 color="Primary",
                 className="me-1",
-                href="/page0"
+                href="/page0",
             ),
             className="d-grip gap-2 d-md-flex justify-content-md-end",
         ),
         html.Div(id="video-intro-output"),
-        ])
+    ]
+)
+
 
 @app.callback(
     Output(component_id="video-intro-output", component_property="children"),
@@ -71,8 +65,9 @@ def update_output_div(n_clicks):
 
     return "Ok"
 
+
 # =============================================================================
-# 
+#
 # if __name__ == "__main__":
 #     # app.run_server(debug=True)
 #     app.run_server(
@@ -90,5 +85,5 @@ def update_output_div(n_clicks):
 #         # dev_tools_prune_errors=None,
 #         # **flask_run_options
 #     )
-# 
+#
 # =============================================================================

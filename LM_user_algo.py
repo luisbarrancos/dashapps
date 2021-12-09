@@ -13,19 +13,13 @@ from datetime import datetime, timedelta
 from random import random
 
 # Dashboards modules
-import dash
 import dash_bootstrap_components as dbc
-import numpy as np
 import pandas as pd
 from dash import dcc, html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
+from dash.dependencies import Input, Output
 from sqlalchemy import create_engine
 
 from app import app
-
-# custom classes
-from UserData import UserData
 
 # All the code for data filtering, processing, done in jupyterlab
 # notebooks (already in github), but now we can bypass all the processing
@@ -40,7 +34,7 @@ df1 = pd.read_sql_table(
 )
 
 df1.dropna(inplace=True)
-df1.sort_values(by=["Year"], inplace=True)
+# df1.sort_values(by=["Year"], inplace=True)
 
 # problem is in some dbs, like nonans_geo, we have 600 years of data
 # leading to nulls everywhere except the last 15 years or so for most cols
@@ -51,7 +45,7 @@ country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 df2 = pd.read_sql_table(
     "UserData",
-    "sqlite:///" + os.path.join(datapath, "userdata.sql"),
+    "sqlite:///" + os.path.join(datapath, "userdata.db"),
     index_col="index",
 )
 
@@ -393,7 +387,7 @@ def update_output_div(n_clicks):
     df = pd.DataFrame.from_dict(strdata, orient="columns")
 
     # store into a DB, this needs to be done better
-    sqldb = os.path.join(os.getcwd(), "assets", "computed_stats.sql")
+    sqldb = os.path.join(datapath, "computed_stats.db")
     engine = create_engine("sqlite:///" + sqldb, echo=False)
     conn = engine.connect()
     df.to_sql("UserStats", conn, if_exists="replace")
