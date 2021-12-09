@@ -21,10 +21,18 @@ The application is [live on Heroku](https://datavizmultlab.herokuapp.com/)
 ## Author
 
 Luis Barrancos
+*(source code, Jupyter Lab notebooks)*
+
+## Data Sources
+
+ * [World Health Organization data](https://www.who.int/data/gho/data/indicators/indicator-details/GHO/life-expectancy-at-birth-(years))
+ * [United Nations data](https://data.un.org/Default.aspx)
+ * [World Bank DataBank](https://databank.worldbank.org/home.aspx)
+ * [Our World In Data](https://ourworldindata.org/life-expectancy)
 
 
-## Credits
+### Credits
 
 Afonso Lopes, Bruno Mascarenhas, Joáo Cardielos for the project video, audio.
-Gabriel Chavarry for some related Unity work.
+Gabriel Chavarry for inspiration in his related Unity work.
 
