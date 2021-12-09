@@ -13,6 +13,7 @@ import urllib
 # Dashboards modules
 import dash_bootstrap_components as dbc
 import pandas as pd
+import webbrowser
 
 # for post
 import requests
@@ -81,7 +82,7 @@ layout = html.Form(
                     "padding": "20px",
                 },
                 children=[
-                    html.P("Share Your Statistics:", style={"padding-bottom": "2em"}),
+                    html.P("Share Your Statistics:", style={"paddingBottom": "2em"}),
                     html.Div(
                         [
                             html.A(
@@ -149,12 +150,12 @@ layout = html.Form(
                     children="Restart",
                     color="Primary",
                     className="me-1",
-                    href="/page1",
+                    href="/page0",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
             ),
-            html.Div(id="output-submit-social"),
-            html.Div(id="output-submit-social-tw"),
+            html.Div(id="output-submit-social", style={"textAlign":"center"}),
+            html.Div(id="output-submit-social-tw", style={"textAlign":"center"}),
         ],
     )
 )
@@ -177,6 +178,8 @@ def post_to_mastodon(toot, tags):
 
     return retdata
 
+def no_data(): 
+    return "There is no user data to post. Please click on \"Restart\"."
 
 @app.callback(
     Output(component_id="output-submit-social", component_property="children"),
@@ -194,10 +197,13 @@ def mastodon(n_clicks, summary):
     if n_clicks == 0 or n_clicks is None:
         raise PreventUpdate
     
-    app.loggin.info("========")
-    app.loggin.info(type(summary))
+    if summary is None:
+        return no_data()
 
-    app.loggin.info("========")
+    # app.loggin.info("========")
+    # app.loggin.info(type(summary))
+
+    # app.loggin.info("========")
 
     toot = (
         summary["time_left"]
@@ -246,15 +252,19 @@ def mastodon(n_clicks, summary):
 
 @app.callback(
     Output(component_id="output-submit-social-tw", component_property="children"),
+    #Output("twitterLink","href"),
     [
         Input(component_id="tw-link", component_property="n_clicks"),
         Input("dccstore_summary", "data"),
     ],
 )
 def tweet(n_clicks, summary):
-    if n_clicks == 0 or n_clicks is None:
+    if n_clicks == 0 or n_clicks is None :
         raise PreventUpdate
-        
+
+    if summary is None:
+        return no_data()
+    
     url = "https://twitter.com/intent/tweet?text=" + urllib.parse.quote(
             (
                 summary["time_left"]
@@ -274,6 +284,5 @@ def tweet(n_clicks, summary):
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
     else:
-        window.open(url);
-
-    return None
+        webbrowser.open(url,new=2, autoraise=True)
+        return "";

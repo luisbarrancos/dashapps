@@ -19,6 +19,7 @@ app.layout = html.Div(
         dcc.Store(id='dccstore_user'),
     ]
 )
+server = app.server
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
@@ -45,6 +46,7 @@ def display_page(pathname):
 
     return LM_intro.layout
     # page 1
+
 
 
 if __name__ == "__main__":

@@ -391,6 +391,13 @@ layout = html.Form(
                     href="/page6",
                 ),
                 className="d-grip gap-2 d-md-flex justify-content-md-end",
+                id="div_submit"
+            ),
+            html.Div(
+                id="div_restart",
+                children=[
+
+                ],
             ),
             html.Div(id="output-user-algo"),
         ],
@@ -405,13 +412,13 @@ layout = html.Form(
     ],
 )
 def trigger_stats_generation(user_data):
-    #app.logger.info(user_data)
-    #raise PreventUpdate
+    if user_data is None:
+       raise PreventUpdate
 
-    app.logger.info("summarizing1 ... ")
+    #app.logger.info("summarizing1 ... ")
     data = summarize_data(user_data)
-    app.logger.info(data)
-    app.logger.info("--end1--- ... ")
+    #app.logger.info(data)
+    #app.logger.info("--end1--- ... ")
 
     return data
 
@@ -423,16 +430,52 @@ def trigger_stats_generation(user_data):
     Output(component_id="output-co2-stats", component_property="children"),
     Output(component_id="output-poverty", component_property="children"),
     Output(component_id="output-suicides", component_property="children"),
+    Output(component_id="div_submit", component_property="children"),
     [
-        Input("dccstore_summary","data")
+        Input("dccstore_summary","data"),
+        Input('url', 'pathname')
     ],
 )
-def update_display_summary(summary):
-    app.logger.info("... summarizing for display ... ")
-    app.logger.info(summary)
-    app.logger.info("... end2... ")
-    return summary["time_left"], summary["life_spent"],summary["life_compare"],summary["school"],summary["co2_stats"], summary["poverty"], summary["suic"]
+def update_display_summary(summary,urlpath):
+    app.logger.info(urlpath)
+    # dynamically add restart/submit  based on whether data exists
+    restart =  dbc.Button(
+                style={
+                    "font-size": 22,
+                    "margin-left": "20px",
+                    "margin-right": "80px",
+                    "background-color": "#111",
+                    "color": "#ffffff",
+                },
+                id="submit-button-state",
+                n_clicks=0,
+                children="Restart",
+                color="Primary",
+                className="me-1",
+                href="/page0",
+                ),
+    submit =  dbc.Button(
+                style={
+                    "font-size": 22,
+                    "margin-left": "20px",
+                    "margin-right": "80px",
+                    "background-color": "#111",
+                    "color": "#ffffff",
+                },
+                id="submit-button-state",
+                n_clicks=0,
+                children="Submit",
+                color="Primary",
+                className="me-1",
+                href="/page6",
+                ),
+    if summary is None:
+        if urlpath == "/page5":
+            return "There is no user data. Please restart.", "", "", "", "", "", "", restart
+        else:
+            raise PreventUpdate
 
+    return summary["time_left"], summary["life_spent"],summary["life_compare"],summary["school"],summary["co2_stats"], summary["poverty"], summary["suic"], submit
 
 
 

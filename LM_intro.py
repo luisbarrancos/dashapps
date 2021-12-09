@@ -25,7 +25,7 @@ layout = html.Div(
             controls=False,
             id="movie_player",
             src=os.path.join(
-                os.getcwd(), "resources", "media", "mockup_video_final.mp4"
+                "/", "resources", "media", "mockup_video_final.mp4"
             ),
             autoPlay=True,
             width=1200,
