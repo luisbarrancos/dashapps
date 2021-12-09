@@ -274,6 +274,6 @@ def tweet(n_clicks, summary):
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
     else:
-        window.open("https://www.w3schools.com");
+        window.open(url);
 
     return None
