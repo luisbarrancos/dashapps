@@ -41,6 +41,7 @@ df.sort_values(by=["Year"], inplace=True)
 df = df[df["Year"] >= 2000]
 
 countries = list(df.index.unique())
+countries.sort()
 country_options = [{"label": str(val), "value": str(val)} for val in countries]
 
 

@@ -208,10 +208,11 @@ def mastodon(n_clicks, summary):
 
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
-
-    # pass
-    status_code = post_to_mastodon(toot, tags)
-    app.logger.info("Tried posting, code = {}".format(status_code))
+    else:
+        #pass
+        status_code = post_to_mastodon(toot, tags)
+        app.logger.info("Tried posting, code = {}".format(status_code))
+        webbrowser.open(url="https://botsin.space/@deadlineproject",new=2, autoraise=True)
 
     return None
 
