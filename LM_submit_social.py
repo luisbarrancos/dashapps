@@ -9,7 +9,8 @@ Created on Sat Dec  4 11:12:43 2021
 # Dataframes, DBs
 import os
 import urllib
-import webbrowser
+#import webbrowser
+
 
 # Dashboards modules
 import dash_bootstrap_components as dbc
@@ -208,13 +209,15 @@ def mastodon(n_clicks, summary):
 
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
-    else:
-        #pass
-        status_code = post_to_mastodon(toot, tags)
-        app.logger.info("Tried posting, code = {}".format(status_code))
-        webbrowser.open(url="https://botsin.space/@deadlineproject",new=2, autoraise=True)
 
-    return None
+    status_code = post_to_mastodon(toot, tags)
+    app.logger.info("Tried posting, code = {}".format(status_code))
+    # webbrowser.open(url="https://botsin.space/@deadlineproject",new=2, autoraise=True)
+
+    if status_code.status_code == 200:
+        return "Successfully uploaded to mastodon!"
+    else:
+        return "Failed to upload to mastodon!"
 
 
 @app.callback(
@@ -251,5 +254,4 @@ def tweet(n_clicks, summary):
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
 
-    webbrowser.open(url, new=2, autoraise=True)
-    return ""
+    return "" #dcc.Location(pathname=url, id="my-output")
