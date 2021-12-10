@@ -48,7 +48,7 @@ for year in df["Year"].unique():
 
 # Layout
 scatter_layout = go.Layout(
-    title="Life Expectancy vs Common Statistics",
+    title="Life Expectancy, Satisfaction and Human Development Index vs Common Statistics",
     xaxis={
         # "type": "log",
         "title": "Life Satisfaction"
